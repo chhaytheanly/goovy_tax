@@ -59,7 +59,7 @@ function calculateSalaryDeductions() {
     let spouseDeduction = (spouseStatus === 'housewife') ? DEPENDENT_DEDUCTION : 0;
     let childrenDeduction = childrenCount * DEPENDENT_DEDUCTION;
     let otherDeduction = otherDependents * DEPENDENT_DEDUCTION;
-    let totalDeductions = STANDARD_RELIEF + spouseDeduction + childrenDeduction + otherDeduction;
+    let totalDeductions = spouseDeduction + childrenDeduction + otherDeduction;
     
     return {
         monthlySalary,
