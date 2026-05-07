@@ -51,7 +51,7 @@ function updateCategoryVisibility() {
 
 // Calculate total salary deductions
 function calculateSalaryDeductions() {
-    const monthlySalary = parseFloat(elements.monthlySalary.value) || 0;
+    const monthlySalary = parseFloat(elements.monthlySalary.value.replace(/,/g, '')) || 0;
     const spouseStatus = elements.spouseStatus.value;
     const childrenCount = parseInt(elements.childrenCount.value) || 0;
     const otherDependents = parseInt(elements.otherDependents.value) || 0;
@@ -137,7 +137,7 @@ function calculatePropertyTax(value) {
 
 function calculate() {
     const category = elements.taxCategory.value;
-    let amount = parseFloat(elements.baseAmount.value) || 0;
+    let amount = parseFloat(elements.baseAmount.value.replace(/,/g, '')) || 0;
     let taxAmount = 0;
     let taxableBase = 0;
     let total = 0;
@@ -253,7 +253,19 @@ elements.taxCategory.addEventListener('change', () => {
     calculate();
 });
 
-elements.monthlySalary.addEventListener('input', () => {
+function formatCurrencyInput(e) {
+    let val = e.target.value.replace(/,/g, '');
+    if (!isNaN(val) && val.length > 0) {
+        let parts = val.split('.');
+        parts[0] = parseInt(parts[0] || 0, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        e.target.value = parts.join('.');
+    } else if (val === '') {
+        e.target.value = '';
+    }
+}
+
+elements.monthlySalary.addEventListener('input', (e) => {
+    formatCurrencyInput(e);
     updateDeductionSummary();
     calculate();
 });
@@ -273,7 +285,10 @@ elements.otherDependents.addEventListener('input', () => {
     calculate();
 });
 
-elements.baseAmount.addEventListener('input', calculate);
+elements.baseAmount.addEventListener('input', (e) => {
+    formatCurrencyInput(e);
+    calculate();
+});
 document.querySelectorAll('input[name="vatMode"]').forEach(radio => {
     radio.addEventListener('change', calculate);
 });
