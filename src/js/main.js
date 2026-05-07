@@ -200,7 +200,17 @@ function calculate() {
 function updateLanguage() {
     const t = translations[currentLanguage];
     
-    document.getElementById('mainTitle').innerText = t.mainTitle;
+    const mainTitle = document.getElementById('mainTitle');
+    mainTitle.innerHTML = `<i class="fa-solid fa-calculator"></i> ${t.mainTitle}`;
+    
+    if (currentLanguage === 'en') {
+        mainTitle.classList.remove('kh-title');
+        mainTitle.classList.add('en-title');
+    } else {
+        mainTitle.classList.remove('en-title');
+        mainTitle.classList.add('kh-title');
+    }
+    
     document.getElementById('subTitle').innerText = t.subTitle;
     document.getElementById('lblAmount').innerText = t.lblAmount;
     document.getElementById('lblCategory').innerText = t.lblCategory;

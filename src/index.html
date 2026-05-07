@@ -1,151 +1,255 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
     <title>Cambodia Tax & VAT Calculator | គណនាពន្ធ និងអាករ</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Moul&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
     <div class="calculator-container">
-        <div class="header">
-            <div class="title-section">
-                <h1 id="mainTitle"><i class="fa-solid fa-calculator"></i> Tax & VAT Calculator Cambodia</h1>
-                <p id="subTitle">Complete with Family Deductions for Salary Tax</p>
+      <div class="header">
+        <div class="title-section">
+          <h1 id="mainTitle" class="kh-title">
+            <i>Tax & VAT Calculator Cambodia</i>
+          </h1>
+          <p id="subTitle">Complete with Family Deductions for Salary Tax</p>
+        </div>
+        <div class="header-controls">
+          <div class="theme-switch">
+            <button class="theme-btn active" id="btnGov">
+              <i class="fa-solid fa-building-columns"></i> Gov
+            </button>
+            <button class="theme-btn" id="btnDigital">
+              <i class="fa-solid fa-microchip"></i> Digital
+            </button>
+          </div>
+          <div class="language-switch">
+            <button class="lang-btn active" id="btnEn">
+              <i class="fa-solid fa-globe"></i> EN
+            </button>
+            <button class="lang-btn" id="btnKh">
+              <i class="fa-solid fa-language"></i> KH
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <div class="input-panel">
+          <div class="form-group">
+            <label id="lblAmount"
+              ><i class="fa-solid fa-money-bill-wave"></i> Amount (៛ KHR)</label
+            >
+            <input
+              type="number"
+              id="baseAmount"
+              class="form-input"
+              placeholder="Enter amount in KHR"
+              value="5000000"
+            />
+          </div>
+
+          <div class="form-group">
+            <label id="lblCategory"
+              ><i class="fa-solid fa-folder"></i> Tax Category</label
+            >
+            <select id="taxCategory" class="form-select">
+              <option value="vat">VAT (Value Added Tax) 10%</option>
+              <option value="salary" selected>
+                Salary Tax on Employment (Progressive)
+              </option>
+              <option value="withholding">
+                Withholding Tax (WHT) - Service 15%
+              </option>
+              <option value="property">
+                Property Tax (Unused Land / 0.1% on >100M)
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group" id="vatModeGroup" style="display: none">
+            <label id="lblVatMode"
+              ><i class="fa-solid fa-sliders"></i> VAT Calculation Mode</label
+            >
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="vatMode" value="exclusive" checked />
+                <span id="optExclusive">Exclusive (Add VAT)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="vatMode" value="inclusive" />
+                <span id="optInclusive">Inclusive (VAT Included)</span>
+              </label>
             </div>
-            <div class="header-controls">
-                <div class="theme-switch">
-                    <button class="theme-btn active" id="btnGov"><i class="fa-solid fa-building-columns"></i> Gov</button>
-                    <button class="theme-btn" id="btnDigital"><i class="fa-solid fa-microchip"></i> Digital</button>
-                </div>
-                <div class="language-switch">
-                    <button class="lang-btn active" id="btnEn"><i class="fa-solid fa-globe"></i> EN</button>
-                    <button class="lang-btn" id="btnKh"><i class="fa-solid fa-language"></i> KH</button>
-                </div>
+          </div>
+
+          <div class="deductions-section" id="salaryDeductionsSection">
+            <div class="section-title" id="deductionsTitle">
+              <i class="fa-solid fa-users"></i> Family & Dependency Deductions
             </div>
+
+            <div class="form-group">
+              <label id="lblMonthlyIncome"
+                ><i class="fa-solid fa-sack-dollar"></i> Monthly Gross Salary
+                (KHR)</label
+              >
+              <input
+                type="number"
+                id="monthlySalary"
+                class="form-input"
+                placeholder="Monthly salary before deductions"
+                value="5000000"
+              />
+            </div>
+
+            <div class="form-group">
+              <label id="lblSpouseStatus"
+                ><i class="fa-solid fa-heart"></i> Spouse Status</label
+              >
+              <select id="spouseStatus" class="form-select">
+                <option value="none" id="optNoSpouse">
+                  No Spouse / Spouse Working
+                </option>
+                <option value="housewife" id="optHousewife">
+                  Spouse is Housewife/Husband (Non-working)
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label id="lblChildren"
+                ><i class="fa-solid fa-child"></i> Number of Dependent
+                Children</label
+              >
+              <input
+                type="number"
+                id="childrenCount"
+                class="form-input"
+                min="0"
+                max="20"
+                value="0"
+              />
+              <small id="childrenHint" class="hint-text"
+                >*Each child gives 150,000 KHR deduction per month</small
+              >
+            </div>
+
+            <div class="form-group">
+              <label id="lblOtherDependents"
+                ><i class="fa-solid fa-hand-holding-heart"></i> Other Dependents
+                (Parents/Siblings)</label
+              >
+              <input
+                type="number"
+                id="otherDependents"
+                class="form-input"
+                min="0"
+                max="10"
+                value="0"
+              />
+              <small id="otherHint" class="hint-text"
+                >*Each dependent gives 150,000 KHR deduction per month</small
+              >
+            </div>
+
+            <div class="deduction-summary" id="deductionSummary">
+              <div class="summary-item">
+                <span id="lblStandardRelief">Standard Relief:</span>
+                <span id="standardReliefValue">1,500,000 KHR</span>
+              </div>
+              <div class="summary-item">
+                <span id="lblSpouseDeduction">Spouse Deduction:</span>
+                <span id="spouseDeductionValue">0 KHR</span>
+              </div>
+              <div class="summary-item">
+                <span id="lblChildrenDeduction">Children Deduction:</span>
+                <span id="childrenDeductionValue">0 KHR</span>
+              </div>
+              <div class="summary-item">
+                <span id="lblOtherDeduction">Other Dependents:</span>
+                <span id="otherDeductionValue">0 KHR</span>
+              </div>
+              <div class="summary-item total-deduction">
+                <span id="lblTotalDeduction"
+                  ><i class="fa-solid fa-coins"></i> Total Deductions:</span
+                >
+                <span id="totalDeductionValue">0 KHR</span>
+              </div>
+            </div>
+          </div>
+
+          <button id="calculateBtn" class="calculate-button">
+            <i class="fa-solid fa-calculator"></i> Calculate Now
+          </button>
         </div>
 
-        <div class="main-content">
-            <div class="input-panel">
-                <div class="form-group">
-                    <label id="lblAmount"><i class="fa-solid fa-money-bill-wave"></i> Amount (៛ KHR)</label>
-                    <input type="number" id="baseAmount" class="form-input" placeholder="Enter amount in KHR" value="5000000">
-                </div>
-
-                <div class="form-group">
-                    <label id="lblCategory"><i class="fa-solid fa-folder"></i> Tax Category</label>
-                    <select id="taxCategory" class="form-select">
-                        <option value="vat">VAT (Value Added Tax) 10%</option>
-                        <option value="salary" selected>Salary Tax on Employment (Progressive)</option>
-                        <option value="withholding">Withholding Tax (WHT) - Service 15%</option>
-                        <option value="property">Property Tax (Unused Land / 0.1% on >100M)</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="vatModeGroup" style="display: none;">
-                    <label id="lblVatMode"><i class="fa-solid fa-sliders"></i> VAT Calculation Mode</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="vatMode" value="exclusive" checked> 
-                            <span id="optExclusive">Exclusive (Add VAT)</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="vatMode" value="inclusive"> 
-                            <span id="optInclusive">Inclusive (VAT Included)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="deductions-section" id="salaryDeductionsSection">
-                    <div class="section-title" id="deductionsTitle"><i class="fa-solid fa-users"></i> Family & Dependency Deductions</div>
-                    
-                    <div class="form-group">
-                        <label id="lblMonthlyIncome"><i class="fa-solid fa-sack-dollar"></i> Monthly Gross Salary (KHR)</label>
-                        <input type="number" id="monthlySalary" class="form-input" placeholder="Monthly salary before deductions" value="5000000">
-                    </div>
-
-                    <div class="form-group">
-                        <label id="lblSpouseStatus"><i class="fa-solid fa-heart"></i> Spouse Status</label>
-                        <select id="spouseStatus" class="form-select">
-                            <option value="none" id="optNoSpouse">No Spouse / Spouse Working</option>
-                            <option value="housewife" id="optHousewife">Spouse is Housewife/Husband (Non-working)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label id="lblChildren"><i class="fa-solid fa-child"></i> Number of Dependent Children</label>
-                        <input type="number" id="childrenCount" class="form-input" min="0" max="20" value="0">
-                        <small id="childrenHint" class="hint-text">*Each child gives 150,000 KHR deduction per month</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label id="lblOtherDependents"><i class="fa-solid fa-hand-holding-heart"></i> Other Dependents (Parents/Siblings)</label>
-                        <input type="number" id="otherDependents" class="form-input" min="0" max="10" value="0">
-                        <small id="otherHint" class="hint-text">*Each dependent gives 150,000 KHR deduction per month</small>
-                    </div>
-
-                    <div class="deduction-summary" id="deductionSummary">
-                        <div class="summary-item">
-                            <span id="lblStandardRelief">Standard Relief:</span>
-                            <span id="standardReliefValue">1,500,000 KHR</span>
-                        </div>
-                        <div class="summary-item">
-                            <span id="lblSpouseDeduction">Spouse Deduction:</span>
-                            <span id="spouseDeductionValue">0 KHR</span>
-                        </div>
-                        <div class="summary-item">
-                            <span id="lblChildrenDeduction">Children Deduction:</span>
-                            <span id="childrenDeductionValue">0 KHR</span>
-                        </div>
-                        <div class="summary-item">
-                            <span id="lblOtherDeduction">Other Dependents:</span>
-                            <span id="otherDeductionValue">0 KHR</span>
-                        </div>
-                        <div class="summary-item total-deduction">
-                            <span id="lblTotalDeduction"><i class="fa-solid fa-coins"></i> Total Deductions:</span>
-                            <span id="totalDeductionValue">0 KHR</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button id="calculateBtn" class="calculate-button"><i class="fa-solid fa-calculator"></i> Calculate Now</button>
+        <div class="result-panel">
+          <h3 id="resultsTitle">
+            <i class="fa-solid fa-file-invoice"></i> Tax Summary
+          </h3>
+          <div id="resultsContent">
+            <div class="result-card">
+              <div class="result-row">
+                <span class="result-label" id="resGrossAmount"
+                  >Gross Amount:</span
+                >
+                <span class="result-value" id="grossAmountValue">0 KHR</span>
+              </div>
+              <div class="result-row">
+                <span class="result-label" id="resTotalDeductions"
+                  >Total Deductions:</span
+                >
+                <span class="result-value" id="totalDeductionsValue"
+                  >0 KHR</span
+                >
+              </div>
+              <div class="result-row">
+                <span class="result-label" id="resTaxableIncome"
+                  >Taxable Income:</span
+                >
+                <span class="result-value" id="taxableIncomeValue">0 KHR</span>
+              </div>
+              <div class="result-row">
+                <span class="result-label" id="resTaxAmount">Tax Amount:</span>
+                <span class="result-value tax-amount" id="taxAmountValue"
+                  >0 KHR</span
+                >
+              </div>
+              <div class="result-row total-row">
+                <span class="result-label" id="resNetPayable"
+                  ><i class="fa-solid fa-money-check-dollar"></i> Net Payable /
+                  After Tax:</span
+                >
+                <span class="result-value total-value" id="netPayableValue"
+                  >0 KHR</span
+                >
+              </div>
             </div>
-
-            <div class="result-panel">
-                <h3 id="resultsTitle"><i class="fa-solid fa-file-invoice"></i> Tax Summary</h3>
-                <div id="resultsContent">
-                    <div class="result-card">
-                        <div class="result-row">
-                            <span class="result-label" id="resGrossAmount">Gross Amount:</span>
-                            <span class="result-value" id="grossAmountValue">0 KHR</span>
-                        </div>
-                        <div class="result-row">
-                            <span class="result-label" id="resTotalDeductions">Total Deductions:</span>
-                            <span class="result-value" id="totalDeductionsValue">0 KHR</span>
-                        </div>
-                        <div class="result-row">
-                            <span class="result-label" id="resTaxableIncome">Taxable Income:</span>
-                            <span class="result-value" id="taxableIncomeValue">0 KHR</span>
-                        </div>
-                        <div class="result-row">
-                            <span class="result-label" id="resTaxAmount">Tax Amount:</span>
-                            <span class="result-value tax-amount" id="taxAmountValue">0 KHR</span>
-                        </div>
-                        <div class="result-row total-row">
-                            <span class="result-label" id="resNetPayable"><i class="fa-solid fa-money-check-dollar"></i> Net Payable / After Tax:</span>
-                            <span class="result-value total-value" id="netPayableValue">0 KHR</span>
-                        </div>
-                    </div>
-                    <div id="taxBreakdown" class="tax-breakdown"></div>
-                </div>
-            </div>
+            <div id="taxBreakdown" class="tax-breakdown"></div>
+          </div>
         </div>
+      </div>
     </div>
 
     <script src="js/main.js"></script>
-</body>
+  </body>
 </html>

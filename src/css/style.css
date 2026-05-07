@@ -1,5 +1,4 @@
 :root {
-    /* DEFAULT THEME: GOVERNMENT */
     --page-bg: #eef2f6;
     --page-bg-gradient: linear-gradient(to bottom, #eef2f6, #d9e2ec);
     --panel-bg: #ffffff;
@@ -24,13 +23,12 @@
     --border-radius: 8px;
     --btn-radius: 4px;
     --danger-red: #E0162B;
-    --font-family: 'Kantumruy Pro', 'Poppins', sans-serif;
+    --font-family: 'Inter', 'Kantumruy Pro', sans-serif;
     --transition-speed: 0.2s;
     --backdrop: none;
 }
 
 [data-theme="digital"] {
-    /* DIGITAL THEME */
     --page-bg: #050b14;
     --page-bg-gradient: radial-gradient(circle at 50% 50%, #0a1128 0%, #03070d 100%);
     --panel-bg: rgba(13, 20, 36, 0.7);
@@ -55,9 +53,17 @@
     --border-radius: 16px;
     --btn-radius: 8px;
     --danger-red: #ff003c;
-    --font-family: 'Kantumruy Pro', 'Poppins', sans-serif;
+    --font-family: 'Inter', 'Kantumruy Pro', sans-serif;
     --transition-speed: 0.4s;
     --backdrop: blur(12px);
+}
+
+.en-title {
+    font-family: "Inter", sans-serif;
+}
+
+.kh-title {
+    font-family: "Moul", serif;
 }
 
 * {
@@ -66,12 +72,17 @@
     box-sizing: border-box;
 }
 
+#subTitle {
+    color: rgb(183, 183, 183);
+    font-size: 0.95rem;
+}
+
 body {
     font-family: var(--font-family);
     background: var(--page-bg-gradient);
     background-color: var(--page-bg);
     min-height: 100vh;
-    padding: 20px;
+    /* padding: 20px; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -80,11 +91,11 @@ body {
 }
 
 .calculator-container {
-    max-width: 1200px;
+    /* max-width: 1200px; */
     width: 100%;
     background: var(--panel-bg);
     backdrop-filter: var(--backdrop);
-    border-radius: var(--border-radius);
+    /* border-radius: var(--border-radius); */
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
     overflow: hidden;
