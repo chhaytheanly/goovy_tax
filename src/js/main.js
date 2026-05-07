@@ -201,7 +201,7 @@ function updateLanguage() {
     const t = translations[currentLanguage];
     
     const mainTitle = document.getElementById('mainTitle');
-    mainTitle.innerHTML = `<i class="fa-solid fa-calculator"></i> ${t.mainTitle}`;
+    mainTitle.innerHTML = ` ${t.mainTitle}`;
     
     if (currentLanguage === 'en') {
         mainTitle.classList.remove('kh-title');

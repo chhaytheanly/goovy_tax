@@ -21,17 +21,38 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <div class="calculator-container">
       <div class="header">
         <div class="title-section">
-          <h1 id="mainTitle" class="kh-title">
-            <i>Tax & VAT Calculator Cambodia</i>
-          </h1>
-          <p id="subTitle">Complete with Family Deductions for Salary Tax</p>
+          <div class="title-wrapper">
+            <div class="logo-group">
+              <img
+                src="public/images/tax_gov.png"
+                alt="GDT Logo"
+                class="header-logo"
+              />
+              <img
+                src="public/images/itc.png"
+                alt="ITC Logo"
+                class="header-logo"
+              />
+            </div>
+            <div class="title-text-group">
+              <h1 id="mainTitle" class="kh-title">
+              Tax & VAT Calculator Cambodia
+              </h1>
+              <p id="subTitle">
+                Complete with Family Deductions for Salary Tax
+              </p>
+            </div>
+          </div>
         </div>
         <div class="header-controls">
           <div class="theme-switch">
@@ -198,7 +219,7 @@
           </div>
 
           <button id="calculateBtn" class="calculate-button">
-            <i class="fa-solid fa-calculator"></i> Calculate Now
+            Calculate Now
           </button>
         </div>
 
