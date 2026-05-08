@@ -494,12 +494,21 @@ body {
     .header {
         flex-direction: column;
         text-align: center;
-        padding: 1.5rem;
+        padding: 1rem;
     }
     
     .title-wrapper {
         justify-content: center;
-        flex-wrap: wrap;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .header-logo {
+        height: 70px;
+    }
+
+    .title-section h1 {
+        font-size: 1.4rem;
     }
     
     .header-controls {
@@ -514,6 +523,22 @@ body {
     }
     
     .main-content {
-        padding: 1.5rem;
+        padding: 1rem;
+        gap: 1.5rem;
+        flex-direction: column;
+    }
+
+    .input-panel, .result-panel {
+        min-width: 100%;
+        width: 100%;
+    }
+
+    .radio-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .total-value {
+        font-size: 1.25rem;
     }
 }
