@@ -91,11 +91,11 @@ body {
 }
 
 .calculator-container {
-    /* max-width: 1200px; */
+    max-width: 1200px;
     width: 100%;
     background: var(--panel-bg);
     backdrop-filter: var(--backdrop);
-    /* border-radius: var(--border-radius); */
+    border-radius: var(--border-radius);
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
     overflow: hidden;
