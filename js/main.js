@@ -25,6 +25,7 @@ const PROPERTY_THRESHOLD = 100000000;
 const PROPERTY_RATE = 0.001;
 
 const elements = {
+  baseAmountGroup: document.getElementById("baseAmountGroup"),
   baseAmount: document.getElementById("baseAmount"),
   taxCategory: document.getElementById("taxCategory"),
   vatModeGroup: document.getElementById("vatModeGroup"),
@@ -41,6 +42,7 @@ function updateCategoryVisibility() {
   const isSalary = category === "salary";
   const isVat = category === "vat";
 
+  elements.baseAmountGroup.style.display = isSalary ? "none" : "block";
   elements.vatModeGroup.style.display = isVat ? "block" : "none";
   elements.salaryDeductionsSection.style.display = isSalary ? "block" : "none";
 
