@@ -30,7 +30,16 @@
     "vatLabel": "VAT (Value Added Tax) 10%",
     "salaryLabel": "Salary Tax on Employment (Progressive)",
     "whtLabel": "Withholding Tax (WHT) - Service 15%",
-    "propertyLabel": "Property Tax (Unused Land / 0.1% on >100M)"
+    "propertyLabel": "Property Tax (Unused Land / 0.1% on >100M)",
+    "lblForeignerStatus": "Foreigner Status (Salary Tax)",
+    "optLocalResident": "Local Resident / Cambodian",
+    "optForeigner": "Foreigner (Same Progressive Tax as Residents)",
+    "rentalLabel": "Rental Income Tax (Progressive)",
+    "lblRentalIncome": "Monthly Rental Income (KHR)",
+    "rentalHint": "*Taxed at progressive rates with 20% business deduction. Official: Prakas No. 576",
+    "transportationLabel": "Transportation Tax",
+    "lblTransportationExpense": "Monthly Transportation Expense (KHR)",
+    "transportationHint": "*Simplified estimate. Official rates vary by vehicle type. Official: Prakas No. 738"
   },
   "kh": {
     "mainTitle": "ម៉ាស៊ីនគណនាពន្ធ និងអាករនៅកម្ពុជា",
@@ -63,6 +72,15 @@
     "vatLabel": "អាករលើតម្លៃបន្ថែម ១០%",
     "salaryLabel": "ពន្ធលើប្រាក់ខែ (អត្រាកើនឡើង)",
     "whtLabel": "ពន្ធកាត់ទុក ១៥%",
-    "propertyLabel": "ពន្ធអចលនទ្រព្យ (០.១% លើស ១០០លានរៀល)"
+    "propertyLabel": "ពន្ធអចលនទ្រព្យ (០.១% លើស ១០០លានរៀល)",
+    "lblForeignerStatus": "ស្ថានភាពបរទេស (ពន្ធលើប្រាក់ខែ)",
+    "optLocalResident": "ប្រជាជនលក្ខណ៍ប្រទេស / កម្ពុជា",
+    "optForeigner": "បរទេស (ពន្ធរីកចម្រើនដូចគ្នាដូចប្រជាជនលក្ខណ៍ប្រទេស)",
+    "rentalLabel": "ពន្ធលើប្រាក់ឈ្នួល (ពន្ធរីកចម្រើន)",
+    "lblRentalIncome": "ប្រាក់ឈ្នួលប្រចាំខែ (រៀល)",
+    "rentalHint": "*ត្រូវបង់ពន្ធក្នុងអត្រារីកចម្រើនដែលមានការកាត់បន្ថយ 20%។ ផ្លូវការ: Prakas No. 576",
+    "transportationLabel": "ពន្ធការដឹក",
+    "lblTransportationExpense": "ការចំណាយដឹកជញ្ជូនប្រចាំខែ (រៀល)",
+    "transportationHint": "*ការប៉ាន់ប្រមាណយ៉ាងសាមញ្ញ។ អត្រាផ្លូវការខុសគ្នាតាមប្រភេទរថយន្ត។ ផ្លូវការ: Prakas No. 738"
   }
 }
