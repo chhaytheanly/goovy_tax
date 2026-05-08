@@ -61,6 +61,11 @@ function updateCategoryVisibility() {
   }
 }
 
+function dollorToRiel(amount) {
+  const exchangeRate = 4100; 
+  return amount * exchangeRate;
+}
+
 function calculateSalaryDeductions() {
   const monthlySalary =
     parseFloat(elements.monthlySalary.value.replace(/,/g, "")) || 0;
@@ -171,17 +176,9 @@ function calculatePropertyTax(value) {
 }
 
 function calculateRentalIncomeTax(amount) {
-  // Official Reference: Prakas No. 576 MEF.PrK.GDT (September 19, 2024) - Tax on Property
-  // Rental income is classified as business/property income and taxed under personal income tax framework
-  // Uses same progressive tax brackets as salary income with allowable business deductions
-  
-  // For the calculator, we simplify by:
-  // 1. Treating monthly rental as taxable income
-  // 2. Allowing a standard 20% business deduction for operating expenses
   const operatingExpenseDeduction = amount * RENTAL_BUSINESS_DEDUCTION_RATE;
   const taxableRentalIncome = Math.max(0, amount - operatingExpenseDeduction);
-  
-  // Apply progressive tax brackets (same as salary tax)
+
   let tax = 0;
   let remaining = taxableRentalIncome;
 
