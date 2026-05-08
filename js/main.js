@@ -16,14 +16,15 @@ async function loadTranslations() {
 
 let currentLanguage = "en";
 
-// Constants (Check too, Alya and Tep)
+// Constants 
 const STANDARD_RELIEF = 1500000;
 const DEPENDENT_DEDUCTION = 150000;
 const VAT_RATE = 0.1;
 const WHT_RATE = 0.15;
 const PROPERTY_THRESHOLD = 100000000;
 const PROPERTY_RATE = 0.001;
-
+const TRANSPORTATION_TAX_RATE = 0.05; 
+const RENTAL_BUSINESS_DEDUCTION_RATE = 0.20; 
 const elements = {
   baseAmountGroup: document.getElementById("baseAmountGroup"),
   baseAmount: document.getElementById("baseAmount"),
@@ -31,9 +32,14 @@ const elements = {
   vatModeGroup: document.getElementById("vatModeGroup"),
   salaryDeductionsSection: document.getElementById("salaryDeductionsSection"),
   monthlySalary: document.getElementById("monthlySalary"),
+  foreignerStatus: document.getElementById("foreignerStatus"),
   spouseStatus: document.getElementById("spouseStatus"),
   childrenCount: document.getElementById("childrenCount"),
   otherDependents: document.getElementById("otherDependents"),
+  rentalIncomeGroup: document.getElementById("rentalIncomeGroup"),
+  rentalIncome: document.getElementById("rentalIncome"),
+  transportationExpenseGroup: document.getElementById("transportationExpenseGroup"),
+  transportationExpense: document.getElementById("transportationExpense"),
   calculateBtn: document.getElementById("calculateBtn"),
 };
 
@@ -41,35 +47,43 @@ function updateCategoryVisibility() {
   const category = elements.taxCategory.value;
   const isSalary = category === "salary";
   const isVat = category === "vat";
+  const isRental = category === "rental";
+  const isTransportation = category === "transportation";
 
-  elements.baseAmountGroup.style.display = isSalary ? "none" : "block";
+  elements.baseAmountGroup.style.display = isSalary || isRental || isTransportation ? "none" : "block";
   elements.vatModeGroup.style.display = isVat ? "block" : "none";
   elements.salaryDeductionsSection.style.display = isSalary ? "block" : "none";
+  elements.rentalIncomeGroup.style.display = isRental ? "block" : "none";
+  elements.transportationExpenseGroup.style.display = isTransportation ? "block" : "none";
 
   if (isSalary) {
     updateDeductionSummary();
   }
 }
 
-// Calculate total salary deductions
 function calculateSalaryDeductions() {
   const monthlySalary =
     parseFloat(elements.monthlySalary.value.replace(/,/g, "")) || 0;
+  const foreignerStatus = elements.foreignerStatus ? elements.foreignerStatus.value : "local";
   const spouseStatus = elements.spouseStatus.value;
   const childrenCount = parseInt(elements.childrenCount.value) || 0;
   const otherDependents = parseInt(elements.otherDependents.value) || 0;
 
+  // Both residents and foreigners get the same deductions per official tax law
+  let standardRelief = STANDARD_RELIEF;
   let spouseDeduction = spouseStatus === "housewife" ? DEPENDENT_DEDUCTION : 0;
   let childrenDeduction = childrenCount * DEPENDENT_DEDUCTION;
   let otherDeduction = otherDependents * DEPENDENT_DEDUCTION;
-  let totalDeductions = spouseDeduction + childrenDeduction + otherDeduction;
+  let totalDeductions = standardRelief + spouseDeduction + childrenDeduction + otherDeduction;
 
   return {
     monthlySalary,
     spouseDeduction,
     childrenDeduction,
     otherDeduction,
+    standardRelief,
     totalDeductions,
+    isForeigner: foreignerStatus === "foreigner",
     taxableIncome: Math.max(0, monthlySalary - totalDeductions),
   };
 }
@@ -78,7 +92,7 @@ function updateDeductionSummary() {
   const deductions = calculateSalaryDeductions();
 
   document.getElementById("standardReliefValue").innerHTML =
-    `${STANDARD_RELIEF.toLocaleString()} KHR`;
+    `${deductions.standardRelief.toLocaleString()} KHR`;
   document.getElementById("spouseDeductionValue").innerHTML =
     `${deductions.spouseDeduction.toLocaleString()} KHR`;
   document.getElementById("childrenDeductionValue").innerHTML =
@@ -89,10 +103,7 @@ function updateDeductionSummary() {
     `${deductions.totalDeductions.toLocaleString()} KHR`;
 }
 
-/**
- * Cambodia's law on Tax on Salary (Please help verify the brackets and rates with the latest official sources):
- */
-function calculateSalaryTax(taxableIncome) {
+function calculateSalaryTax(taxableIncome, isForeigner = false) {
   if (taxableIncome <= 0) return 0;
 
   let tax = 0;
@@ -159,6 +170,55 @@ function calculatePropertyTax(value) {
   };
 }
 
+function calculateRentalIncomeTax(amount) {
+  // Official Reference: Prakas No. 576 MEF.PrK.GDT (September 19, 2024) - Tax on Property
+  // Rental income is classified as business/property income and taxed under personal income tax framework
+  // Uses same progressive tax brackets as salary income with allowable business deductions
+  
+  // For the calculator, we simplify by:
+  // 1. Treating monthly rental as taxable income
+  // 2. Allowing a standard 20% business deduction for operating expenses
+  const operatingExpenseDeduction = amount * RENTAL_BUSINESS_DEDUCTION_RATE;
+  const taxableRentalIncome = Math.max(0, amount - operatingExpenseDeduction);
+  
+  // Apply progressive tax brackets (same as salary tax)
+  let tax = 0;
+  let remaining = taxableRentalIncome;
+
+  if (remaining > 1500000) {
+    let tier1 = Math.min(remaining, 2000000) - 1500000;
+    if (tier1 > 0) tax += tier1 * 0.05;
+  }
+  if (remaining > 2000000) {
+    let tier2 = Math.min(remaining, 8500000) - 2000000;
+    if (tier2 > 0) tax += tier2 * 0.1;
+  }
+  if (remaining > 8500000) {
+    let tier3 = Math.min(remaining, 12500000) - 8500000;
+    if (tier3 > 0) tax += tier3 * 0.15;
+  }
+  if (remaining > 12500000) {
+    let tier4 = remaining - 12500000;
+    tax += tier4 * 0.2;
+  }
+
+  return {
+    taxAmount: Math.round(tax),
+    taxableBase: Math.round(taxableRentalIncome),
+    total: Math.round(amount - tax),
+    deduction: Math.round(operatingExpenseDeduction),
+  };
+}
+
+function calculateTransportationTax(amount) {
+  const tax = amount * TRANSPORTATION_TAX_RATE;
+  return {
+    taxAmount: Math.round(tax),
+    taxableBase: amount,
+    total: amount - tax,
+  };
+}
+
 function calculate() {
   const category = elements.taxCategory.value;
   let amount = parseFloat(elements.baseAmount.value.replace(/,/g, "")) || 0;
@@ -185,14 +245,22 @@ function calculate() {
     const deductions = calculateSalaryDeductions();
     grossAmount = deductions.monthlySalary;
     taxableBase = deductions.taxableIncome;
-    taxAmount = calculateSalaryTax(taxableBase);
+    taxAmount = calculateSalaryTax(taxableBase, deductions.isForeigner);
     total = grossAmount - taxAmount;
     totalDeductions = deductions.totalDeductions;
 
+    const taxRateDesc = currentLanguage === "en" 
+      ? "Progressive rates (applies to all): 0%→5%→10%→15%→20%" 
+      : "អត្រារីកចម្រើន (អនុវត្តទៅគ្រប់គ្នា): ០%→៥%→១០%→១៥%→២០%";
+    
+    const foreignerNote = deductions.isForeigner 
+      ? (currentLanguage === "en" ? " (Foreign employee - same deductions as residents)" : " (បុគ្គលបរទេស - ការកាត់បន្ថយដូចគ្នាដូចប្រជាជនលក្ខណ៍ប្រទេស)")
+      : "";
+
     breakdown =
       currentLanguage === "en"
-        ? `Tax Calculation Breakdown: Standard Relief: ${STANDARD_RELIEF.toLocaleString()} KHR, Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, Progressive rates: 0%→5%→10%→15%→20%`
-        : `ការគណនាពន្ធ: ការកាត់បន្ថយស្តង់ដារ: ${STANDARD_RELIEF.toLocaleString()} រៀល, ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, អត្រារីកចម្រើន: ០%→៥%→១០%→១៥%→២០%`;
+        ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Standard Relief: ${deductions.standardRelief.toLocaleString()} KHR, Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR${foreignerNote}, ${taxRateDesc}`
+        : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្តង់ដារ: ${deductions.standardRelief.toLocaleString()} រៀល, ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល${foreignerNote}, ${taxRateDesc}`;
   } else if (category === "withholding") {
     const result = calculateWHT(amount);
     taxAmount = result.taxAmount;
@@ -211,6 +279,29 @@ function calculate() {
       currentLanguage === "en"
         ? `Property Tax: 0.1% on value exceeding ${PROPERTY_THRESHOLD.toLocaleString()} KHR`
         : `ពន្ធអចលនទ្រព្យ: ០.១% លើតម្លៃលើស ${PROPERTY_THRESHOLD.toLocaleString()} រៀល`;
+  } else if (category === "rental") {
+    amount = parseFloat(elements.rentalIncome.value.replace(/,/g, "")) || 0;
+    const result = calculateRentalIncomeTax(amount);
+    taxAmount = result.taxAmount;
+    taxableBase = result.taxableBase;
+    total = result.total;
+    grossAmount = amount;
+    totalDeductions = result.deduction;
+    breakdown =
+      currentLanguage === "en"
+        ? `Rental Income Tax (Official: Prakas No. 576, Sept 2024): Progressive tax on property income. Business deduction (20%): ${result.deduction.toLocaleString()} KHR. Taxable income subject to progressive brackets: 0%→5%→10%→15%→20%`
+        : `ពន្ធលើប្រាក់ឈ្នួល (ផ្លូវការ: Prakas No. 576, កញ្ញា 2024): ពន្ធរីកចម្រើននៅលើប្រាក់ចំណូលលើទ្រព្យ។ ការកាត់បន្ថយប្រព័ន្ធពាណិជ្ជកម្ម (20%): ${result.deduction.toLocaleString()} រៀល។ ប្រាក់ចំណូលដែលត្រូវបង់ពន្ធក្ខណ្ឌល: ០%→៥%→១០%→១៥%→២០%`;
+  } else if (category === "transportation") {
+    amount = parseFloat(elements.transportationExpense.value.replace(/,/g, "")) || 0;
+    const result = calculateTransportationTax(amount);
+    taxAmount = result.taxAmount;
+    taxableBase = result.taxableBase;
+    total = result.total;
+    grossAmount = amount;
+    breakdown =
+      currentLanguage === "en"
+        ? `Transportation Tax: 5% on monthly transportation expenses`
+        : `ពន្ធការដឹក: ៥% លើការចំណាយដឹកជញ្ជូនប្រចាំខែ`;
   }
 
   document.getElementById("grossAmountValue").innerHTML =
@@ -251,6 +342,9 @@ function updateLanguage() {
   document.getElementById("optInclusive").innerText = t.optInclusive;
   document.getElementById("deductionsTitle").innerText = t.deductionsTitle;
   document.getElementById("lblMonthlyIncome").innerText = t.lblMonthlyIncome;
+  document.getElementById("lblForeignerStatus").innerText = t.lblForeignerStatus;
+  document.getElementById("optLocalResident").innerText = t.optLocalResident;
+  document.getElementById("optForeigner").innerText = t.optForeigner;
   document.getElementById("lblSpouseStatus").innerText = t.lblSpouseStatus;
   document.getElementById("optNoSpouse").innerText = t.optNoSpouse;
   document.getElementById("optHousewife").innerText = t.optHousewife;
@@ -266,6 +360,10 @@ function updateLanguage() {
     t.lblChildrenDeduction;
   document.getElementById("lblOtherDeduction").innerText = t.lblOtherDeduction;
   document.getElementById("lblTotalDeduction").innerText = t.lblTotalDeduction;
+  document.getElementById("lblRentalIncome").innerText = t.lblRentalIncome;
+  document.getElementById("rentalHint").innerText = t.rentalHint;
+  document.getElementById("lblTransportationExpense").innerText = t.lblTransportationExpense;
+  document.getElementById("transportationHint").innerText = t.transportationHint;
   document.getElementById("resultsTitle").innerText = t.resultsTitle;
   document.getElementById("resGrossAmount").innerText = t.resGrossAmount;
   document.getElementById("resTotalDeductions").innerText =
@@ -279,6 +377,8 @@ function updateLanguage() {
   categorySelect.options[1].text = t.salaryLabel;
   categorySelect.options[2].text = t.whtLabel;
   categorySelect.options[3].text = t.propertyLabel;
+  categorySelect.options[4].text = t.rentalLabel;
+  categorySelect.options[5].text = t.transportationLabel;
 
   updateDeductionSummary();
   calculate();
@@ -308,6 +408,11 @@ elements.monthlySalary.addEventListener("input", (e) => {
   calculate();
 });
 
+elements.foreignerStatus.addEventListener("change", () => {
+  updateDeductionSummary();
+  calculate();
+});
+
 elements.spouseStatus.addEventListener("change", () => {
   updateDeductionSummary();
   calculate();
@@ -320,6 +425,16 @@ elements.childrenCount.addEventListener("input", () => {
 
 elements.otherDependents.addEventListener("input", () => {
   updateDeductionSummary();
+  calculate();
+});
+
+elements.rentalIncome.addEventListener("input", (e) => {
+  formatCurrencyInput(e);
+  calculate();
+});
+
+elements.transportationExpense.addEventListener("input", (e) => {
+  formatCurrencyInput(e);
   calculate();
 });
 
