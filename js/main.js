@@ -25,6 +25,7 @@ const PROPERTY_THRESHOLD = 100000000;
 const PROPERTY_RATE = 0.001;
 const TRANSPORTATION_TAX_RATE = 0.05; 
 const RENTAL_BUSINESS_DEDUCTION_RATE = 0.20; 
+const USD_TO_KHR_RATE = 4100;
 const elements = {
   baseAmountGroup: document.getElementById("baseAmountGroup"),
   baseAmount: document.getElementById("baseAmount"),
@@ -61,14 +62,25 @@ function updateCategoryVisibility() {
   }
 }
 
-function dollorToRiel(amount) {
-  const exchangeRate = 4100; 
-  return amount * exchangeRate;
+function convertToKhr(amount, currency) {
+  if (currency === "usd") {
+    return amount * USD_TO_KHR_RATE;
+  }
+  return amount;
+}
+
+function getSelectedCurrency(name) {
+  const selected = document.querySelector(`input[name="${name}"]:checked`);
+  return selected ? selected.value : "khr";
 }
 
 function calculateSalaryDeductions() {
-  const monthlySalary =
+  const monthlySalaryRaw =
     parseFloat(elements.monthlySalary.value.replace(/,/g, "")) || 0;
+  const monthlySalary = convertToKhr(
+    monthlySalaryRaw,
+    getSelectedCurrency("salaryCurrency"),
+  );
   const foreignerStatus = elements.foreignerStatus ? elements.foreignerStatus.value : "local";
   const spouseStatus = elements.spouseStatus.value;
   const childrenCount = parseInt(elements.childrenCount.value) || 0;
@@ -218,7 +230,8 @@ function calculateTransportationTax(amount) {
 
 function calculate() {
   const category = elements.taxCategory.value;
-  let amount = parseFloat(elements.baseAmount.value.replace(/,/g, "")) || 0;
+  let amountRaw = parseFloat(elements.baseAmount.value.replace(/,/g, "")) || 0;
+  let amount = convertToKhr(amountRaw, getSelectedCurrency("baseCurrency"));
   let taxAmount = 0;
   let taxableBase = 0;
   let total = 0;
@@ -277,7 +290,8 @@ function calculate() {
         ? `Property Tax: 0.1% on value exceeding ${PROPERTY_THRESHOLD.toLocaleString()} KHR`
         : `ពន្ធអចលនទ្រព្យ: ០.១% លើតម្លៃលើស ${PROPERTY_THRESHOLD.toLocaleString()} រៀល`;
   } else if (category === "rental") {
-    amount = parseFloat(elements.rentalIncome.value.replace(/,/g, "")) || 0;
+    amountRaw = parseFloat(elements.rentalIncome.value.replace(/,/g, "")) || 0;
+    amount = convertToKhr(amountRaw, getSelectedCurrency("rentalCurrency"));
     const result = calculateRentalIncomeTax(amount);
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
@@ -289,7 +303,8 @@ function calculate() {
         ? `Rental Income Tax (Official: Prakas No. 576, Sept 2024): Progressive tax on property income. Business deduction (20%): ${result.deduction.toLocaleString()} KHR. Taxable income subject to progressive brackets: 0%→5%→10%→15%→20%`
         : `ពន្ធលើប្រាក់ឈ្នួល (ផ្លូវការ: Prakas No. 576, កញ្ញា 2024): ពន្ធរីកចម្រើននៅលើប្រាក់ចំណូលលើទ្រព្យ។ ការកាត់បន្ថយប្រព័ន្ធពាណិជ្ជកម្ម (20%): ${result.deduction.toLocaleString()} រៀល។ ប្រាក់ចំណូលដែលត្រូវបង់ពន្ធក្ខណ្ឌល: ០%→៥%→១០%→១៥%→២០%`;
   } else if (category === "transportation") {
-    amount = parseFloat(elements.transportationExpense.value.replace(/,/g, "")) || 0;
+    amountRaw = parseFloat(elements.transportationExpense.value.replace(/,/g, "")) || 0;
+    amount = convertToKhr(amountRaw, getSelectedCurrency("transportCurrency"));
     const result = calculateTransportationTax(amount);
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
@@ -377,6 +392,19 @@ function updateLanguage() {
   categorySelect.options[4].text = t.rentalLabel;
   categorySelect.options[5].text = t.transportationLabel;
 
+  document.querySelectorAll(".currency-label").forEach((el) => {
+    el.innerText = t.lblCurrency;
+  });
+  document.querySelectorAll(".currency-khr").forEach((el) => {
+    el.innerText = t.optCurrencyKHR;
+  });
+  document.querySelectorAll(".currency-usd").forEach((el) => {
+    el.innerText = t.optCurrencyUSD;
+  });
+  document.querySelectorAll(".currency-hint").forEach((el) => {
+    el.innerText = t.currencyHint.replace("{rate}", USD_TO_KHR_RATE.toLocaleString());
+  });
+
   updateDeductionSummary();
   calculate();
 }
@@ -441,6 +469,13 @@ elements.baseAmount.addEventListener("input", (e) => {
 });
 document.querySelectorAll('input[name="vatMode"]').forEach((radio) => {
   radio.addEventListener("change", calculate);
+});
+
+document.querySelectorAll('input[name="baseCurrency"], input[name="salaryCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+    updateDeductionSummary();
+    calculate();
+  });
 });
 
 elements.calculateBtn.addEventListener("click", calculate);
