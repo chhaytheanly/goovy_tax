@@ -1,0 +1,10 @@
+export const STANDARD_RELIEF = 1500000;
+export const DEPENDENT_DEDUCTION = 150000;
+export const VAT_RATE = 0.1;
+export const WHT_RATE = 0.15;
+export const PROPERTY_THRESHOLD = 100000000;
+export const PROPERTY_RATE = 0.001;
+export const TRANSPORTATION_TAX_RATE = 0.05;
+export const RENTAL_BUSINESS_DEDUCTION_RATE = 0.20;
+export const USD_TO_KHR_RATE = 4100;
+export const FOREIGNER_SALARY_RATE = 0.20;

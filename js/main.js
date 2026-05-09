@@ -1,4 +1,13 @@
-let translations = {};
+import { convertToKhr, getSelectedCurrency } from "./utils/currency.js";
+import { formatCurrencyInput } from "./utils/formatter.js";
+import { getElements, getVatMode, getCurrencyRadios, getVatModeRadios } from "./utils/dom.js";
+import { calculateSalaryDeductions, calculateSalaryTax } from "./tax/salary.js";
+import { calculateVAT, calculateWHT,calculatePropertyTax, calculateRentalIncomeTax, calculateTransportationTax } from "./tax/other.js";
+import { updateLanguage } from "./i18n/language.js";
+import { setTranslations } from "./i18n/translations.js";
+
+let currentLanguage = "en";
+const elements = getElements();
 
 async function loadTranslations() {
   try {
@@ -6,43 +15,15 @@ async function loadTranslations() {
     if (!result.ok) {
       throw new Error("Failed to load translations");
     }
-    translations = await result.json();
+    setTranslations(await result.json());
     updateCategoryVisibility();
-    updateLanguage();
+    updateLanguage(currentLanguage, elements);
+    updateDeductionSummary();
+    calculate();
   } catch (error) {
     console.error("Error loading translations:", error);
   }
 }
-
-let currentLanguage = "en";
-
-// Constants 
-const STANDARD_RELIEF = 1500000;
-const DEPENDENT_DEDUCTION = 150000;
-const VAT_RATE = 0.1;
-const WHT_RATE = 0.15;
-const PROPERTY_THRESHOLD = 100000000;
-const PROPERTY_RATE = 0.001;
-const TRANSPORTATION_TAX_RATE = 0.05; 
-const RENTAL_BUSINESS_DEDUCTION_RATE = 0.20; 
-const USD_TO_KHR_RATE = 4100;
-const elements = {
-  baseAmountGroup: document.getElementById("baseAmountGroup"),
-  baseAmount: document.getElementById("baseAmount"),
-  taxCategory: document.getElementById("taxCategory"),
-  vatModeGroup: document.getElementById("vatModeGroup"),
-  salaryDeductionsSection: document.getElementById("salaryDeductionsSection"),
-  monthlySalary: document.getElementById("monthlySalary"),
-  foreignerStatus: document.getElementById("foreignerStatus"),
-  spouseStatus: document.getElementById("spouseStatus"),
-  childrenCount: document.getElementById("childrenCount"),
-  otherDependents: document.getElementById("otherDependents"),
-  rentalIncomeGroup: document.getElementById("rentalIncomeGroup"),
-  rentalIncome: document.getElementById("rentalIncome"),
-  transportationExpenseGroup: document.getElementById("transportationExpenseGroup"),
-  transportationExpense: document.getElementById("transportationExpense"),
-  calculateBtn: document.getElementById("calculateBtn"),
-};
 
 function updateCategoryVisibility() {
   const category = elements.taxCategory.value;
@@ -62,51 +43,8 @@ function updateCategoryVisibility() {
   }
 }
 
-function convertToKhr(amount, currency) {
-  if (currency === "usd") {
-    return amount * USD_TO_KHR_RATE;
-  }
-  return amount;
-}
-
-function getSelectedCurrency(name) {
-  const selected = document.querySelector(`input[name="${name}"]:checked`);
-  return selected ? selected.value : "khr";
-}
-
-function calculateSalaryDeductions() {
-  const monthlySalaryRaw =
-    parseFloat(elements.monthlySalary.value.replace(/,/g, "")) || 0;
-  const monthlySalary = convertToKhr(
-    monthlySalaryRaw,
-    getSelectedCurrency("salaryCurrency"),
-  );
-  const foreignerStatus = elements.foreignerStatus ? elements.foreignerStatus.value : "local";
-  const spouseStatus = elements.spouseStatus.value;
-  const childrenCount = parseInt(elements.childrenCount.value) || 0;
-  const otherDependents = parseInt(elements.otherDependents.value) || 0;
-
-  // Both residents and foreigners get the same deductions per official tax law
-  let standardRelief = STANDARD_RELIEF;
-  let spouseDeduction = spouseStatus === "housewife" ? DEPENDENT_DEDUCTION : 0;
-  let childrenDeduction = childrenCount * DEPENDENT_DEDUCTION;
-  let otherDeduction = otherDependents * DEPENDENT_DEDUCTION;
-  let totalDeductions = standardRelief + spouseDeduction + childrenDeduction + otherDeduction;
-
-  return {
-    monthlySalary,
-    spouseDeduction,
-    childrenDeduction,
-    otherDeduction,
-    standardRelief,
-    totalDeductions,
-    isForeigner: foreignerStatus === "foreigner",
-    taxableIncome: Math.max(0, monthlySalary - totalDeductions),
-  };
-}
-
 function updateDeductionSummary() {
-  const deductions = calculateSalaryDeductions();
+  const deductions = getSalaryDeductions();
 
   document.getElementById("standardReliefValue").innerHTML =
     `${deductions.standardRelief.toLocaleString()} KHR`;
@@ -120,112 +58,21 @@ function updateDeductionSummary() {
     `${deductions.totalDeductions.toLocaleString()} KHR`;
 }
 
-function calculateSalaryTax(taxableIncome, isForeigner = false) {
-  if (taxableIncome <= 0) return 0;
-
-  let tax = 0;
-  let remaining = taxableIncome;
-
-  if (remaining > 1500000) {
-    let tier1 = Math.min(remaining, 2000000) - 1500000;
-    if (tier1 > 0) tax += tier1 * 0.05;
-  }
-  if (remaining > 2000000) {
-    let tier2 = Math.min(remaining, 8500000) - 2000000;
-    if (tier2 > 0) tax += tier2 * 0.1;
-  }
-  if (remaining > 8500000) {
-    let tier3 = Math.min(remaining, 12500000) - 8500000;
-    if (tier3 > 0) tax += tier3 * 0.15;
-  }
-  if (remaining > 12500000) {
-    let tier4 = remaining - 12500000;
-    tax += tier4 * 0.2;
-  }
-
-  return Math.round(tax);
-}
-
-function calculateVAT(amount, mode) {
-  if (mode === "exclusive") {
-    const vat = amount * VAT_RATE;
-    return {
-      taxAmount: Math.round(vat),
-      taxableBase: amount,
-      total: amount + vat,
-    };
-  } else {
-    const vat = amount * (VAT_RATE / (1 + VAT_RATE));
-    const taxableBase = amount - vat;
-    return {
-      taxAmount: Math.round(vat),
-      taxableBase: Math.round(taxableBase),
-      total: amount,
-    };
-  }
-}
-
-function calculateWHT(amount) {
-  const tax = amount * WHT_RATE;
-  return {
-    taxAmount: Math.round(tax),
-    taxableBase: amount,
-    total: amount - tax,
-  };
-}
-
-function calculatePropertyTax(value) {
-  if (value <= PROPERTY_THRESHOLD) {
-    return { taxAmount: 0, taxableBase: 0, total: value };
-  }
-  const excess = value - PROPERTY_THRESHOLD;
-  const tax = excess * PROPERTY_RATE;
-  return {
-    taxAmount: Math.round(tax),
-    taxableBase: excess,
-    total: value - tax,
-  };
-}
-
-function calculateRentalIncomeTax(amount) {
-  const operatingExpenseDeduction = amount * RENTAL_BUSINESS_DEDUCTION_RATE;
-  const taxableRentalIncome = Math.max(0, amount - operatingExpenseDeduction);
-
-  let tax = 0;
-  let remaining = taxableRentalIncome;
-
-  if (remaining > 1500000) {
-    let tier1 = Math.min(remaining, 2000000) - 1500000;
-    if (tier1 > 0) tax += tier1 * 0.05;
-  }
-  if (remaining > 2000000) {
-    let tier2 = Math.min(remaining, 8500000) - 2000000;
-    if (tier2 > 0) tax += tier2 * 0.1;
-  }
-  if (remaining > 8500000) {
-    let tier3 = Math.min(remaining, 12500000) - 8500000;
-    if (tier3 > 0) tax += tier3 * 0.15;
-  }
-  if (remaining > 12500000) {
-    let tier4 = remaining - 12500000;
-    tax += tier4 * 0.2;
-  }
-
-  return {
-    taxAmount: Math.round(tax),
-    taxableBase: Math.round(taxableRentalIncome),
-    total: Math.round(amount - tax),
-    deduction: Math.round(operatingExpenseDeduction),
-  };
-}
-
-function calculateTransportationTax(amount) {
-  const tax = amount * TRANSPORTATION_TAX_RATE;
-  return {
-    taxAmount: Math.round(tax),
-    taxableBase: amount,
-    total: amount - tax,
-  };
+function getSalaryDeductions() {
+  const monthlySalaryRaw = parseFloat(elements.monthlySalary.value.replace(/,/g, "")) || 0;
+  const monthlySalary = convertToKhr( monthlySalaryRaw, getSelectedCurrency("salaryCurrency"));
+  const foreignerStatus = elements.foreignerStatus ? elements.foreignerStatus.value : "local";
+  const spouseStatus = elements.spouseStatus.value;
+  const childrenCount = parseInt(elements.childrenCount.value, 10) || 0;
+  const otherDependents = parseInt(elements.otherDependents.value, 10) || 0;
+  const isForeigner = foreignerStatus === "foreigner";
+  return calculateSalaryDeductions({
+    monthlySalary,
+    spouseStatus,
+    childrenCount,
+    otherDependents,
+    isForeigner,
+  });
 }
 
 function calculate() {
@@ -240,9 +87,7 @@ function calculate() {
   let totalDeductions = 0;
 
   if (category === "vat") {
-    const vatMode = document.querySelector(
-      'input[name="vatMode"]:checked',
-    ).value;
+    const vatMode = getVatMode();
     const result = calculateVAT(amount, vatMode);
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
@@ -252,25 +97,25 @@ function calculate() {
         ? `VAT calculated at 10% (${vatMode === "exclusive" ? "added to base" : "included in amount"})`
         : `អាករគណនា ១០% (${vatMode === "exclusive" ? "បន្ថែមលើតម្លៃ" : "រួមបញ្ចូលក្នុងចំនួន"})`;
   } else if (category === "salary") {
-    const deductions = calculateSalaryDeductions();
+    const deductions = getSalaryDeductions();
     grossAmount = deductions.monthlySalary;
     taxableBase = deductions.taxableIncome;
     taxAmount = calculateSalaryTax(taxableBase, deductions.isForeigner);
     total = grossAmount - taxAmount;
     totalDeductions = deductions.totalDeductions;
 
-    const taxRateDesc = currentLanguage === "en" 
-      ? "Progressive rates (applies to all): 0%→5%→10%→15%→20%" 
-      : "អត្រារីកចម្រើន (អនុវត្តទៅគ្រប់គ្នា): ០%→៥%→១០%→១៥%→២០%";
-    
-    const foreignerNote = deductions.isForeigner 
-      ? (currentLanguage === "en" ? " (Foreign employee - same deductions as residents)" : " (បុគ្គលបរទេស - ការកាត់បន្ថយដូចគ្នាដូចប្រជាជនលក្ខណ៍ប្រទេស)")
-      : "";
+    const taxRateDesc = deductions.isForeigner
+      ? currentLanguage === "en"
+        ? "Foreigner salary tax: flat 20% (no deductions)"
+        : "ពន្ធលើប្រាក់ខែបរទេស: អត្រាប្រភេទថេរ ២០% (គ្មានការកាត់បន្ថយ)"
+      : currentLanguage === "en"
+        ? "Progressive rates: 0%→5%→10%→15%→20%"
+        : "អត្រារីកចម្រើន: ០%→៥%→១០%→១៥%→២០%";
 
     breakdown =
       currentLanguage === "en"
-        ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Standard Relief: ${deductions.standardRelief.toLocaleString()} KHR, Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR${foreignerNote}, ${taxRateDesc}`
-        : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្តង់ដារ: ${deductions.standardRelief.toLocaleString()} រៀល, ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល${foreignerNote}, ${taxRateDesc}`;
+        ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Standard Relief: ${deductions.standardRelief.toLocaleString()} KHR, Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, ${taxRateDesc}`
+        : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្តង់ដារ: ${deductions.standardRelief.toLocaleString()} រៀល, ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, ${taxRateDesc}`;
   } else if (category === "withholding") {
     const result = calculateWHT(amount);
     taxAmount = result.taxAmount;
@@ -287,8 +132,8 @@ function calculate() {
     total = result.total;
     breakdown =
       currentLanguage === "en"
-        ? `Property Tax: 0.1% on value exceeding ${PROPERTY_THRESHOLD.toLocaleString()} KHR`
-        : `ពន្ធអចលនទ្រព្យ: ០.១% លើតម្លៃលើស ${PROPERTY_THRESHOLD.toLocaleString()} រៀល`;
+        ? `Property Tax: 0.1% on value exceeding 100,000,000 KHR`
+        : `ពន្ធអចលនទ្រព្យ: ០.១% លើតម្លៃលើស 100,000,000 រៀល`;
   } else if (category === "rental") {
     amountRaw = parseFloat(elements.rentalIncome.value.replace(/,/g, "")) || 0;
     amount = convertToKhr(amountRaw, getSelectedCurrency("rentalCurrency"));
@@ -332,100 +177,10 @@ function calculate() {
   breakdownElement.style.display = "block";
 }
 
-function updateLanguage() {
-  const t = translations[currentLanguage];
-
-  const mainTitle = document.getElementById("mainTitle");
-  mainTitle.innerHTML = ` ${t.mainTitle}`;
-
-  if (currentLanguage === "en") {
-    mainTitle.classList.remove("kh-title");
-    mainTitle.classList.add("en-title");
-  } else {
-    mainTitle.classList.remove("en-title");
-    mainTitle.classList.add("kh-title");
-  }
-
-  document.getElementById("subTitle").innerText = t.subTitle;
-  document.getElementById("lblAmount").innerText = t.lblAmount;
-  document.getElementById("lblCategory").innerText = t.lblCategory;
-  document.getElementById("lblVatMode").innerText = t.lblVatMode;
-  document.getElementById("optExclusive").innerText = t.optExclusive;
-  document.getElementById("optInclusive").innerText = t.optInclusive;
-  document.getElementById("deductionsTitle").innerText = t.deductionsTitle;
-  document.getElementById("lblMonthlyIncome").innerText = t.lblMonthlyIncome;
-  document.getElementById("lblForeignerStatus").innerText = t.lblForeignerStatus;
-  document.getElementById("optLocalResident").innerText = t.optLocalResident;
-  document.getElementById("optForeigner").innerText = t.optForeigner;
-  document.getElementById("lblSpouseStatus").innerText = t.lblSpouseStatus;
-  document.getElementById("optNoSpouse").innerText = t.optNoSpouse;
-  document.getElementById("optHousewife").innerText = t.optHousewife;
-  document.getElementById("lblChildren").innerText = t.lblChildren;
-  document.getElementById("childrenHint").innerText = t.childrenHint;
-  document.getElementById("lblOtherDependents").innerText =
-    t.lblOtherDependents;
-  document.getElementById("otherHint").innerText = t.otherHint;
-  document.getElementById("lblStandardRelief").innerText = t.lblStandardRelief;
-  document.getElementById("lblSpouseDeduction").innerText =
-    t.lblSpouseDeduction;
-  document.getElementById("lblChildrenDeduction").innerText =
-    t.lblChildrenDeduction;
-  document.getElementById("lblOtherDeduction").innerText = t.lblOtherDeduction;
-  document.getElementById("lblTotalDeduction").innerText = t.lblTotalDeduction;
-  document.getElementById("lblRentalIncome").innerText = t.lblRentalIncome;
-  document.getElementById("rentalHint").innerText = t.rentalHint;
-  document.getElementById("lblTransportationExpense").innerText = t.lblTransportationExpense;
-  document.getElementById("transportationHint").innerText = t.transportationHint;
-  document.getElementById("resultsTitle").innerText = t.resultsTitle;
-  document.getElementById("resGrossAmount").innerText = t.resGrossAmount;
-  document.getElementById("resTotalDeductions").innerText =
-    t.resTotalDeductions;
-  document.getElementById("resTaxableIncome").innerText = t.resTaxableIncome;
-  document.getElementById("resTaxAmount").innerText = t.resTaxAmount;
-  document.getElementById("resNetPayable").innerText = t.resNetPayable;
-
-  const categorySelect = elements.taxCategory;
-  categorySelect.options[0].text = t.vatLabel;
-  categorySelect.options[1].text = t.salaryLabel;
-  categorySelect.options[2].text = t.whtLabel;
-  categorySelect.options[3].text = t.propertyLabel;
-  categorySelect.options[4].text = t.rentalLabel;
-  categorySelect.options[5].text = t.transportationLabel;
-
-  document.querySelectorAll(".currency-label").forEach((el) => {
-    el.innerText = t.lblCurrency;
-  });
-  document.querySelectorAll(".currency-khr").forEach((el) => {
-    el.innerText = t.optCurrencyKHR;
-  });
-  document.querySelectorAll(".currency-usd").forEach((el) => {
-    el.innerText = t.optCurrencyUSD;
-  });
-  document.querySelectorAll(".currency-hint").forEach((el) => {
-    el.innerText = t.currencyHint.replace("{rate}", USD_TO_KHR_RATE.toLocaleString());
-  });
-
-  updateDeductionSummary();
-  calculate();
-}
-
 elements.taxCategory.addEventListener("change", () => {
   updateCategoryVisibility();
   calculate();
 });
-
-function formatCurrencyInput(e) {
-  let val = e.target.value.replace(/,/g, "");
-  if (!isNaN(val) && val.length > 0) {
-    let parts = val.split(".");
-    parts[0] = parseInt(parts[0] || 0, 10)
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    e.target.value = parts.join(".");
-  } else if (val === "") {
-    e.target.value = "";
-  }
-}
 
 elements.monthlySalary.addEventListener("input", (e) => {
   formatCurrencyInput(e);
@@ -467,11 +222,11 @@ elements.baseAmount.addEventListener("input", (e) => {
   formatCurrencyInput(e);
   calculate();
 });
-document.querySelectorAll('input[name="vatMode"]').forEach((radio) => {
+getVatModeRadios().forEach((radio) => {
   radio.addEventListener("change", calculate);
 });
 
-document.querySelectorAll('input[name="baseCurrency"], input[name="salaryCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"]').forEach((radio) => {
+getCurrencyRadios().forEach((radio) => {
   radio.addEventListener("change", () => {
     updateDeductionSummary();
     calculate();
@@ -486,7 +241,9 @@ document.getElementById("btnEn").addEventListener("click", () => {
     .querySelectorAll(".lang-btn")
     .forEach((btn) => btn.classList.remove("active"));
   document.getElementById("btnEn").classList.add("active");
-  updateLanguage();
+  updateLanguage(currentLanguage, elements);
+  updateDeductionSummary();
+  calculate();
 });
 
 document.getElementById("btnKh").addEventListener("click", () => {
@@ -495,7 +252,9 @@ document.getElementById("btnKh").addEventListener("click", () => {
     .querySelectorAll(".lang-btn")
     .forEach((btn) => btn.classList.remove("active"));
   document.getElementById("btnKh").classList.add("active");
-  updateLanguage();
+  updateLanguage(currentLanguage, elements);
+  updateDeductionSummary();
+  calculate();
 });
 
 document.getElementById("btnGov").addEventListener("click", () => {
