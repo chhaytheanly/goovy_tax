@@ -270,6 +270,15 @@ body {
     margin-top: 0.25rem;
 }
 
+.currency-group {
+    margin-top: 0.75rem;
+}
+
+.currency-toggle .radio-label {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
 /* Radio Group */
 .radio-group {
     display: flex;
