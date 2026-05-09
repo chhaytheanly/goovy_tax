@@ -12,14 +12,16 @@ export function getElements() {
     otherDependents: document.getElementById("otherDependents"),
     rentalIncomeGroup: document.getElementById("rentalIncomeGroup"),
     rentalIncome: document.getElementById("rentalIncome"),
-    transportationExpenseGroup: document.getElementById("transportationExpenseGroup"),
+    transportationExpenseGroup: document.getElementById(
+      "transportationExpenseGroup",
+    ),
     transportationExpense: document.getElementById("transportationExpense"),
     calculateBtn: document.getElementById("calculateBtn"),
   };
 }
 
 export function getVatMode() {
-  const selected = document.querySelector("input[name=\"vatMode\"]:checked");
+  const selected = document.querySelector('input[name="vatMode"]:checked');
   return selected ? selected.value : "exclusive";
 }
 

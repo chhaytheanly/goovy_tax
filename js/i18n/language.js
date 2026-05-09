@@ -24,7 +24,8 @@ export function updateLanguage(currentLanguage, elements) {
   document.getElementById("optInclusive").innerText = t.optInclusive;
   document.getElementById("deductionsTitle").innerText = t.deductionsTitle;
   document.getElementById("lblMonthlyIncome").innerText = t.lblMonthlyIncome;
-  document.getElementById("lblForeignerStatus").innerText = t.lblForeignerStatus;
+  document.getElementById("lblForeignerStatus").innerText =
+    t.lblForeignerStatus;
   document.getElementById("optLocalResident").innerText = t.optLocalResident;
   document.getElementById("optForeigner").innerText = t.optForeigner;
   document.getElementById("lblSpouseStatus").innerText = t.lblSpouseStatus;
@@ -32,20 +33,26 @@ export function updateLanguage(currentLanguage, elements) {
   document.getElementById("optHousewife").innerText = t.optHousewife;
   document.getElementById("lblChildren").innerText = t.lblChildren;
   document.getElementById("childrenHint").innerText = t.childrenHint;
-  document.getElementById("lblOtherDependents").innerText = t.lblOtherDependents;
+  document.getElementById("lblOtherDependents").innerText =
+    t.lblOtherDependents;
   document.getElementById("otherHint").innerText = t.otherHint;
   document.getElementById("lblStandardRelief").innerText = t.lblStandardRelief;
-  document.getElementById("lblSpouseDeduction").innerText = t.lblSpouseDeduction;
-  document.getElementById("lblChildrenDeduction").innerText = t.lblChildrenDeduction;
+  document.getElementById("lblSpouseDeduction").innerText =
+    t.lblSpouseDeduction;
+  document.getElementById("lblChildrenDeduction").innerText =
+    t.lblChildrenDeduction;
   document.getElementById("lblOtherDeduction").innerText = t.lblOtherDeduction;
   document.getElementById("lblTotalDeduction").innerText = t.lblTotalDeduction;
   document.getElementById("lblRentalIncome").innerText = t.lblRentalIncome;
   document.getElementById("rentalHint").innerText = t.rentalHint;
-  document.getElementById("lblTransportationExpense").innerText = t.lblTransportationExpense;
-  document.getElementById("transportationHint").innerText = t.transportationHint;
+  document.getElementById("lblTransportationExpense").innerText =
+    t.lblTransportationExpense;
+  document.getElementById("transportationHint").innerText =
+    t.transportationHint;
   document.getElementById("resultsTitle").innerText = t.resultsTitle;
   document.getElementById("resGrossAmount").innerText = t.resGrossAmount;
-  document.getElementById("resTotalDeductions").innerText = t.resTotalDeductions;
+  document.getElementById("resTotalDeductions").innerText =
+    t.resTotalDeductions;
   document.getElementById("resTaxableIncome").innerText = t.resTaxableIncome;
   document.getElementById("resTaxAmount").innerText = t.resTaxAmount;
   document.getElementById("resNetPayable").innerText = t.resNetPayable;

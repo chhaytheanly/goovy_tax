@@ -1,8 +1,19 @@
 import { convertToKhr, getSelectedCurrency } from "./utils/currency.js";
 import { formatCurrencyInput } from "./utils/formatter.js";
-import { getElements, getVatMode, getCurrencyRadios, getVatModeRadios } from "./utils/dom.js";
+import {
+  getElements,
+  getVatMode,
+  getCurrencyRadios,
+  getVatModeRadios,
+} from "./utils/dom.js";
 import { calculateSalaryDeductions, calculateSalaryTax } from "./tax/salary.js";
-import { calculateVAT, calculateWHT,calculatePropertyTax, calculateRentalIncomeTax, calculateTransportationTax } from "./tax/other.js";
+import {
+  calculateVAT,
+  calculateWHT,
+  calculatePropertyTax,
+  calculateRentalIncomeTax,
+  calculateTransportationTax,
+} from "./tax/other.js";
 import { updateLanguage } from "./i18n/language.js";
 import { setTranslations } from "./i18n/translations.js";
 
@@ -32,11 +43,14 @@ function updateCategoryVisibility() {
   const isRental = category === "rental";
   const isTransportation = category === "transportation";
 
-  elements.baseAmountGroup.style.display = isSalary || isRental || isTransportation ? "none" : "block";
+  elements.baseAmountGroup.style.display =
+    isSalary || isRental || isTransportation ? "none" : "block";
   elements.vatModeGroup.style.display = isVat ? "block" : "none";
   elements.salaryDeductionsSection.style.display = isSalary ? "block" : "none";
   elements.rentalIncomeGroup.style.display = isRental ? "block" : "none";
-  elements.transportationExpenseGroup.style.display = isTransportation ? "block" : "none";
+  elements.transportationExpenseGroup.style.display = isTransportation
+    ? "block"
+    : "none";
 
   if (isSalary) {
     updateDeductionSummary();
@@ -59,9 +73,15 @@ function updateDeductionSummary() {
 }
 
 function getSalaryDeductions() {
-  const monthlySalaryRaw = parseFloat(elements.monthlySalary.value.replace(/,/g, "")) || 0;
-  const monthlySalary = convertToKhr( monthlySalaryRaw, getSelectedCurrency("salaryCurrency"));
-  const foreignerStatus = elements.foreignerStatus ? elements.foreignerStatus.value : "local";
+  const monthlySalaryRaw =
+    parseFloat(elements.monthlySalary.value.replace(/,/g, "")) || 0;
+  const monthlySalary = convertToKhr(
+    monthlySalaryRaw,
+    getSelectedCurrency("salaryCurrency"),
+  );
+  const foreignerStatus = elements.foreignerStatus
+    ? elements.foreignerStatus.value
+    : "local";
   const spouseStatus = elements.spouseStatus.value;
   const childrenCount = parseInt(elements.childrenCount.value, 10) || 0;
   const otherDependents = parseInt(elements.otherDependents.value, 10) || 0;
@@ -148,7 +168,8 @@ function calculate() {
         ? `Rental Income Tax (Official: Prakas No. 576, Sept 2024): Progressive tax on property income. Business deduction (20%): ${result.deduction.toLocaleString()} KHR. Taxable income subject to progressive brackets: 0%→5%→10%→15%→20%`
         : `ពន្ធលើប្រាក់ឈ្នួល (ផ្លូវការ: Prakas No. 576, កញ្ញា 2024): ពន្ធរីកចម្រើននៅលើប្រាក់ចំណូលលើទ្រព្យ។ ការកាត់បន្ថយប្រព័ន្ធពាណិជ្ជកម្ម (20%): ${result.deduction.toLocaleString()} រៀល។ ប្រាក់ចំណូលដែលត្រូវបង់ពន្ធក្ខណ្ឌល: ០%→៥%→១០%→១៥%→២០%`;
   } else if (category === "transportation") {
-    amountRaw = parseFloat(elements.transportationExpense.value.replace(/,/g, "")) || 0;
+    amountRaw =
+      parseFloat(elements.transportationExpense.value.replace(/,/g, "")) || 0;
     amount = convertToKhr(amountRaw, getSelectedCurrency("transportCurrency"));
     const result = calculateTransportationTax(amount);
     taxAmount = result.taxAmount;
