@@ -96,6 +96,14 @@
             <option value="transportation">
               Transportation Tax
             </option>
+          
+            <option value="accommodation">Accommodation Tax (2%)</option>
+            <option value="import">Import Duty & VAT</option>
+            <option value="patent">Patent Tax</option>
+            <option value="publicLighting">Public Lighting Tax (5%)</option>
+            <option value="specific">Specific Tax</option>
+            <option value="unusedLand">Unused Land Tax (2%)</option>
+            <option value="vehicle">Vehicle Tax</option>
           </select>
         </div>
 
@@ -239,6 +247,38 @@
             <small class="hint-text currency-hint" id="transportCurrencyHint">*USD will be converted at 4,100 KHR</small>
           </div>
           <small id="transportationHint" class="hint-text">*Transportation expenses may be deductible or taxable</small>
+        </div>
+
+        
+        <div class="form-group" id="dutyRateGroup" style="display: none">
+          <label id="lblDutyRate"><i class="fa-solid fa-percent"></i> Duty Rate (%)</label>
+          <input type="number" id="dutyRate" class="form-input" placeholder="Enter duty rate %" value="15" />
+        </div>
+
+        <div class="form-group" id="patentGroup" style="display: none">
+          <label id="lblPatentType"><i class="fa-solid fa-building"></i> Taxpayer Type</label>
+          <select id="patentType" class="form-select">
+            <option value="SMALL">Small Taxpayer</option>
+            <option value="MEDIUM">Medium Taxpayer</option>
+            <option value="LARGE">Large Taxpayer</option>
+            <option value="LARGE_ENTERPRISE">Large Enterprise</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="specificRateGroup" style="display: none">
+          <label id="lblSpecificRate"><i class="fa-solid fa-percent"></i> Specific Tax Rate (%)</label>
+          <input type="number" id="specificRate" class="form-input" placeholder="Enter specific tax rate %" value="10" />
+        </div>
+
+        <div class="form-group" id="vehicleGroup" style="display: none">
+          <label id="lblVehicleType"><i class="fa-solid fa-car"></i> Vehicle Type</label>
+          <select id="vehicleType" class="form-select">
+            <option value="MOTORBIKE">Motorbike</option>
+            <option value="CAR_SMALL">Small Car</option>
+            <option value="CAR_MEDIUM">Medium Car</option>
+            <option value="CAR_LARGE">Large Car</option>
+            <option value="LUXURY">Luxury Vehicle</option>
+          </select>
         </div>
 
         <button id="calculateBtn" class="calculate-button">
