@@ -65,6 +65,48 @@ export function updateLanguage(currentLanguage, elements) {
   categorySelect.options[4].text = t.rentalLabel;
   categorySelect.options[5].text = t.transportationLabel;
 
+  // New tax labels in Select
+  categorySelect.options[6].text = t.accommodationLabel;
+  categorySelect.options[7].text = t.importLabel;
+  categorySelect.options[8].text = t.patentLabel;
+  categorySelect.options[9].text = t.publicLightingLabel;
+  categorySelect.options[10].text = t.specificLabel;
+  categorySelect.options[11].text = t.unusedLandLabel;
+  categorySelect.options[12].text = t.vehicleLabel;
+
+  // New inputs
+  const elDutyRate = document.getElementById("lblDutyRate");
+  if(elDutyRate) elDutyRate.innerHTML = `<i class="fa-solid fa-percent"></i> ${t.lblDutyRate}`;
+  
+  const elPatentType = document.getElementById("lblPatentType");
+  if(elPatentType) elPatentType.innerHTML = `<i class="fa-solid fa-building"></i> ${t.lblPatentType}`;
+  
+  const elSpecificRate = document.getElementById("lblSpecificRate");
+  if(elSpecificRate) elSpecificRate.innerHTML = `<i class="fa-solid fa-percent"></i> ${t.lblSpecificRate}`;
+  
+  const elVehicleType = document.getElementById("lblVehicleType");
+  if(elVehicleType) elVehicleType.innerHTML = `<i class="fa-solid fa-car"></i> ${t.lblVehicleType}`;
+
+  // Select Options for Patent
+  const patentType = document.getElementById("patentType");
+  if(patentType) {
+    patentType.options[0].text = t.optPatentSmall;
+    patentType.options[1].text = t.optPatentMedium;
+    patentType.options[2].text = t.optPatentLarge;
+    patentType.options[3].text = t.optPatentLargeEnt;
+  }
+
+  // Select Options for Vehicle
+  const vehicleType = document.getElementById("vehicleType");
+  if(vehicleType) {
+    vehicleType.options[0].text = t.optVehMotorbike;
+    vehicleType.options[1].text = t.optVehCarSmall;
+    vehicleType.options[2].text = t.optVehCarMedium;
+    vehicleType.options[3].text = t.optVehCarLarge;
+    vehicleType.options[4].text = t.optVehLuxury;
+  }
+
+
   document.querySelectorAll(".currency-label").forEach((el) => {
     el.innerText = t.lblCurrency;
   });
