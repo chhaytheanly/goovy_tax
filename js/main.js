@@ -3,17 +3,18 @@ import { formatCurrencyInput } from "./utils/formatter.js";
 import {
   getElements,
   getVatMode,
+  getVatType,
   getCurrencyRadios,
   getVatModeRadios,
 } from "./utils/dom.js";
 import { calculateSalaryDeductions, calculateSalaryTax } from "./tax/salary.js";
 import {
-  calculateVAT,
   calculateWHT,
   calculatePropertyTax,
   calculateRentalIncomeTax,
   calculateTransportationTax,
 } from "./tax/other.js";
+import { calculateVAT } from "./tax/VAT.js";
 import { updateLanguage } from "./i18n/language.js";
 import { setTranslations } from "./i18n/translations.js";
 import { calculateAccommodationTax } from "./tax/accommodationTax.js";
@@ -59,6 +60,7 @@ function updateCategoryVisibility() {
   elements.baseAmountGroup.style.display =
     (isSalary || isRental || isTransportation || isPatent || isVehicle) ? "none" : "block";
   elements.vatModeGroup.style.display = isVat ? "block" : "none";
+  if (elements.vatTypeGroup) elements.vatTypeGroup.style.display = isVat ? "block" : "none";
   elements.salaryDeductionsSection.style.display = isSalary ? "block" : "none";
   elements.rentalIncomeGroup.style.display = isRental ? "block" : "none";
   elements.transportationExpenseGroup.style.display = isTransportation ? "block" : "none";
@@ -131,14 +133,21 @@ function calculate() {
 
   if (category === "vat") {
     const vatMode = getVatMode();
-    const result = calculateVAT(amount, vatMode);
+    const vatType = getVatType();
+    const result = calculateVAT(amount, vatMode, vatType);
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
     total = result.total;
+    const vatCaseLabel =
+      vatType === "import"
+        ? "import VAT at 10%"
+        : vatType === "export"
+          ? "export VAT at 0%"
+          : "standard VAT at 10%";
     breakdown =
       currentLanguage === "en"
-        ? `VAT calculated at 10% (${vatMode === "exclusive" ? "added to base" : "included in amount"})`
-        : `អាករគណនា ១០% (${vatMode === "exclusive" ? "បន្ថែមលើតម្លៃ" : "រួមបញ្ចូលក្នុងចំនួន"})`;
+        ? `VAT calculated using ${vatCaseLabel} (${vatMode === "exclusive" ? "added to base" : "included in amount"})`
+        : `VAT calculated using ${vatCaseLabel} (${vatMode === "exclusive" ? "added to base" : "included in amount"})`;
   } else if (category === "salary") {
     const deductions = getSalaryDeductions();
     grossAmount = deductions.monthlySalary;
@@ -200,7 +209,7 @@ function calculate() {
   } else if (category === "import") {
     const dutyRateStr = document.getElementById("dutyRate").value;
     const dutyRate = (parseFloat(dutyRateStr) || 0) / 100;
-    const result = calculateImportDuty({ importValue: amount, dutyRate, vatRate: 0.1 });
+    const result = calculateImportDuty({ importValue: amount, dutyRate });
     taxAmount = result.totalTax; // sum of duty and VAT
     taxableBase = amount;
     total = result.grandTotal;
@@ -320,6 +329,10 @@ elements.baseAmount.addEventListener("input", (e) => {
   calculate();
 });
 getVatModeRadios().forEach((radio) => {
+  radio.addEventListener("change", calculate);
+});
+
+document.querySelectorAll('input[name="vatType"]').forEach((radio) => {
   radio.addEventListener("change", calculate);
 });
 

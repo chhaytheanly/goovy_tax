@@ -121,6 +121,24 @@
           </div>
         </div>
 
+        <div class="form-group" id="vatTypeGroup" style="display: none">
+          <label id="lblVatType"><i class="fa-solid fa-truck-arrow-right"></i> VAT Case</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="vatType" value="domestic" checked />
+              <span id="optVatDomestic">Domestic sale 10%</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="vatType" value="import" />
+              <span id="optVatImport">Import 10%</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="vatType" value="export" />
+              <span id="optVatExport">Export 0%</span>
+            </label>
+          </div>
+        </div>
+
         <div class="deductions-section" id="salaryDeductionsSection">
           <div class="section-title" id="deductionsTitle">
             <i class="fa-solid fa-users"></i> Family & Dependency Deductions

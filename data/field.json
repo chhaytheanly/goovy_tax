@@ -1,4 +1,4 @@
-{
+﻿{
   "en": {
     "mainTitle": "Tax & VAT Calculator Cambodia",
     "subTitle": "Complete with Family Deductions for Salary Tax",
@@ -63,7 +63,11 @@
     "optVehCarSmall": "Small Car",
     "optVehCarMedium": "Medium Car",
     "optVehCarLarge": "Large Car",
-    "optVehLuxury": "Luxury Vehicle"
+    "optVehLuxury": "Luxury Vehicle",
+    "lblVatType":  "VAT Case",
+    "optVatDomestic":  "Domestic sale 10%",
+    "optVatImport":  "Import 10%",
+    "optVatExport":  "Export 0%"
   },
   "kh": {
     "mainTitle": "ម៉ាស៊ីនគណនាពន្ធ និងអាករនៅកម្ពុជា",
@@ -129,6 +133,10 @@
     "optVehCarSmall": "រថយន្តតូច",
     "optVehCarMedium": "រថយន្តមធ្យម",
     "optVehCarLarge": "រថយន្តធំ",
-    "optVehLuxury": "រថយន្តប្រណីត"
+    "optVehLuxury": "រថយន្តប្រណីត",
+    "lblVatType":  "ប្រភេទអាករបន្ថែម",
+    "optVatDomestic":  "លក់ក្នុងស្រុក ១០%",
+    "optVatImport":  "នាំចូល ១០%",
+    "optVatExport":  "នាំចេញ ០%"
   }
 }

@@ -22,6 +22,14 @@ export function updateLanguage(currentLanguage, elements) {
   document.getElementById("lblVatMode").innerText = t.lblVatMode;
   document.getElementById("optExclusive").innerText = t.optExclusive;
   document.getElementById("optInclusive").innerText = t.optInclusive;
+  const lblVatType = document.getElementById("lblVatType");
+  if (lblVatType) lblVatType.innerText = t.lblVatType;
+  const optVatDomestic = document.getElementById("optVatDomestic");
+  if (optVatDomestic) optVatDomestic.innerText = t.optVatDomestic;
+  const optVatImport = document.getElementById("optVatImport");
+  if (optVatImport) optVatImport.innerText = t.optVatImport;
+  const optVatExport = document.getElementById("optVatExport");
+  if (optVatExport) optVatExport.innerText = t.optVatExport;
   document.getElementById("deductionsTitle").innerText = t.deductionsTitle;
   document.getElementById("lblMonthlyIncome").innerText = t.lblMonthlyIncome;
   document.getElementById("lblForeignerStatus").innerText =

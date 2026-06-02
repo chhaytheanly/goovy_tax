@@ -1,12 +1,13 @@
+import { calculateImportVAT } from "./VAT.js";
+
 export function calculateImportDuty({
   importValue,
   dutyRate,
-  vatRate = 0.1,
 }) {
   const importDuty = importValue * dutyRate;
 
   const vatBase = importValue + importDuty;
-  const vat = vatBase * vatRate;
+  const vat = calculateImportVAT(vatBase).taxAmount;
 
   const totalTax = importDuty + vat;
 

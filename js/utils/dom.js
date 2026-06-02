@@ -4,6 +4,7 @@ export function getElements() {
     baseAmount: document.getElementById("baseAmount"),
     taxCategory: document.getElementById("taxCategory"),
     vatModeGroup: document.getElementById("vatModeGroup"),
+    vatTypeGroup: document.getElementById("vatTypeGroup"),
     salaryDeductionsSection: document.getElementById("salaryDeductionsSection"),
     monthlySalary: document.getElementById("monthlySalary"),
     foreignerStatus: document.getElementById("foreignerStatus"),
@@ -23,6 +24,11 @@ export function getElements() {
 export function getVatMode() {
   const selected = document.querySelector('input[name="vatMode"]:checked');
   return selected ? selected.value : "exclusive";
+}
+
+export function getVatType() {
+  const selected = document.querySelector('input[name="vatType"]:checked');
+  return selected ? selected.value : "domestic";
 }
 
 export function getCurrencyRadios() {

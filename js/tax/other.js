@@ -1,29 +1,10 @@
 import {
-  VAT_RATE,
   WHT_RATE,
   PROPERTY_THRESHOLD,
   PROPERTY_RATE,
   TRANSPORTATION_TAX_RATE,
   RENTAL_BUSINESS_DEDUCTION_RATE,
 } from "../config/constants.js";
-
-export function calculateVAT(amount, mode) {
-  if (mode === "exclusive") {
-    const vat = amount * VAT_RATE;
-    return {
-      taxAmount: Math.round(vat),
-      taxableBase: amount,
-      total: amount + vat,
-    };
-  }
-  const vat = amount * (VAT_RATE / (1 + VAT_RATE));
-  const taxableBase = amount - vat;
-  return {
-    taxAmount: Math.round(vat),
-    taxableBase: Math.round(taxableBase),
-    total: amount,
-  };
-}
 
 export function calculateWHT(amount) {
   const tax = amount * WHT_RATE;
