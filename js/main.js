@@ -10,6 +10,7 @@ import {
 import { calculateSalaryDeductions, calculateSalaryTax } from "./tax/salary.js";
 import {
   calculateWHT,
+  getWHTRate,
   calculatePropertyTax,
   calculateRentalIncomeTax,
   calculateTransportationTax,
@@ -27,6 +28,7 @@ import { calculateVehicleTax } from "./tax/vehicleTax.js";
 
 
 let currentLanguage = "en";
+let lastResidentWhtType = "service";
 const elements = getElements();
 
 async function loadTranslations() {
@@ -50,6 +52,7 @@ function updateCategoryVisibility() {
   const isSalary = category === "salary";
   const isVat = category === "vat";
   const isRental = category === "rental";
+  const isWht = category === "withholding";
   const isTransportation = category === "transportation";
 
   const isPatent = category === "patent";
@@ -59,6 +62,10 @@ function updateCategoryVisibility() {
 
   elements.baseAmountGroup.style.display =
     (isSalary || isRental || isTransportation || isPatent || isVehicle) ? "none" : "block";
+  const whtSubcategoryGroup = document.getElementById("whtSubcategoryGroup");
+  if (whtSubcategoryGroup) whtSubcategoryGroup.style.display = isWht ? "block" : "none";
+  const whtTypeGroup = document.getElementById("whtTypeGroup");
+  if (whtTypeGroup) whtTypeGroup.style.display = isWht ? "block" : "none";
   elements.vatModeGroup.style.display = isVat ? "block" : "none";
   if (elements.vatTypeGroup) elements.vatTypeGroup.style.display = isVat ? "block" : "none";
   elements.salaryDeductionsSection.style.display = isSalary ? "block" : "none";
@@ -79,6 +86,36 @@ function updateCategoryVisibility() {
 
   if (isSalary) {
     updateDeductionSummary();
+  }
+  if (isWht) {
+    updateWhtTypeOptions();
+  }
+}
+
+function updateWhtTypeOptions() {
+  if (!elements.whtSubcategory || !elements.whtType) return;
+
+  const isResident = elements.whtSubcategory.value === "resident";
+  const currentType = elements.whtType.value;
+
+  Array.from(elements.whtType.options).forEach((option, index) => {
+    const shouldShow = isResident ? index < 4 : index === 4;
+    option.hidden = !shouldShow;
+    option.disabled = !shouldShow;
+  });
+
+  if (isResident) {
+    if (currentType !== "paymentNonResident") {
+      lastResidentWhtType = currentType;
+    }
+    if (currentType === "paymentNonResident") {
+      elements.whtType.value = lastResidentWhtType || "service";
+    }
+  } else {
+    if (currentType !== "paymentNonResident") {
+      lastResidentWhtType = currentType;
+    }
+    elements.whtType.value = "paymentNonResident";
   }
 }
 
@@ -169,14 +206,19 @@ function calculate() {
         ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Standard Relief: ${deductions.standardRelief.toLocaleString()} KHR, Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, ${taxRateDesc}`
         : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្តង់ដារ: ${deductions.standardRelief.toLocaleString()} រៀល, ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, ${taxRateDesc}`;
   } else if (category === "withholding") {
-    const result = calculateWHT(amount);
+    const whtSubcategory = elements.whtSubcategory?.value || "resident";
+    const whtType = elements.whtType?.value || "service";
+    const whtRate = getWHTRate(whtSubcategory, whtType);
+    const result = calculateWHT(amount, whtRate);
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
     total = result.total;
+    const whtSubcategoryLabel = elements.whtSubcategory?.selectedOptions[0]?.text || "";
+    const whtTypeLabel = elements.whtType?.selectedOptions[0]?.text || "";
     breakdown =
       currentLanguage === "en"
-        ? `Withholding Tax (WHT) 15% on service payments`
-        : `ពន្ធទុកដាក់ ១៥% លើការបង់ថ្លៃសេវា`;
+        ? `Withholding Tax (WHT): ${whtSubcategoryLabel} - ${whtTypeLabel}`
+        : `ពន្ធកាត់ទុក (WHT): ${whtSubcategoryLabel} - ${whtTypeLabel}`;
   } else if (category === "property") {
     const result = calculatePropertyTax(amount);
     taxAmount = result.taxAmount;
@@ -288,6 +330,13 @@ elements.taxCategory.addEventListener("change", () => {
   calculate();
 });
 
+elements.whtSubcategory?.addEventListener("change", () => {
+  updateWhtTypeOptions();
+  calculate();
+});
+
+elements.whtType?.addEventListener("change", calculate);
+
 elements.monthlySalary.addEventListener("input", (e) => {
   formatCurrencyInput(e);
   updateDeductionSummary();
@@ -358,6 +407,7 @@ document.getElementById("btnEn").addEventListener("click", () => {
     .forEach((btn) => btn.classList.remove("active"));
   document.getElementById("btnEn").classList.add("active");
   updateLanguage(currentLanguage, elements);
+  updateWhtTypeOptions();
   updateDeductionSummary();
   calculate();
 });
@@ -369,6 +419,7 @@ document.getElementById("btnKh").addEventListener("click", () => {
     .forEach((btn) => btn.classList.remove("active"));
   document.getElementById("btnKh").classList.add("active");
   updateLanguage(currentLanguage, elements);
+  updateWhtTypeOptions();
   updateDeductionSummary();
   calculate();
 });

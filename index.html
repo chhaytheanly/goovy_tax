@@ -85,7 +85,7 @@
               Salary Tax on Employment (Progressive)
             </option>
             <option value="withholding">
-              Withholding Tax (WHT) - Service 15%
+              Withholding Tax (WHT)
             </option>
             <option value="property">
               Property Tax (Unused Land / 0.1% on >100M)
@@ -104,6 +104,25 @@
             <option value="specific">Specific Tax</option>
             <option value="unusedLand">Unused Land Tax (2%)</option>
             <option value="vehicle">Vehicle Tax</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="whtSubcategoryGroup" style="display: none">
+          <label id="lblWhtSubcategory"><i class="fa-solid fa-sitemap"></i> WHT Subcategory</label>
+          <select id="whtSubcategory" class="form-select">
+            <option value="resident" id="optWhtResident">Resident</option>
+            <option value="nonResident" id="optWhtNonResident">Non-Resident</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="whtTypeGroup" style="display: none">
+          <label id="lblWhtType"><i class="fa-solid fa-list"></i> WHT Type</label>
+          <select id="whtType" class="form-select">
+            <option value="service" id="whtTypeService">Services, royalties, management fees (15%)</option>
+            <option value="rent" id="whtTypeRent">Rent on movable/immovable property (10%)</option>
+            <option value="interestResidentTerm" id="whtTypeInterestResidentTerm">Interest to resident - with term (6%)</option>
+            <option value="interestResidentNoTerm" id="whtTypeInterestResidentNoTerm">Interest to resident - no term (4%)</option>
+            <option value="paymentNonResident" id="whtTypePaymentNonResident">Payment to non-resident (14%)</option>
           </select>
         </div>
 

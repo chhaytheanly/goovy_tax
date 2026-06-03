@@ -19,6 +19,10 @@ export function updateLanguage(currentLanguage, elements) {
   document.getElementById("subTitle").innerText = t.subTitle;
   document.getElementById("lblAmount").innerText = t.lblAmount;
   document.getElementById("lblCategory").innerText = t.lblCategory;
+  const lblWhtSubcategory = document.getElementById("lblWhtSubcategory");
+  if (lblWhtSubcategory) lblWhtSubcategory.innerText = t.lblWhtSubcategory;
+  const lblWhtType = document.getElementById("lblWhtType");
+  if (lblWhtType) lblWhtType.innerText = t.lblWhtType;
   document.getElementById("lblVatMode").innerText = t.lblVatMode;
   document.getElementById("optExclusive").innerText = t.optExclusive;
   document.getElementById("optInclusive").innerText = t.optInclusive;
@@ -81,6 +85,31 @@ export function updateLanguage(currentLanguage, elements) {
   categorySelect.options[10].text = t.specificLabel;
   categorySelect.options[11].text = t.unusedLandLabel;
   categorySelect.options[12].text = t.vehicleLabel;
+
+  const whtSubcategory = elements.whtSubcategory;
+  if (whtSubcategory) {
+    whtSubcategory.options[0].text = t.whtResidentLabel;
+    whtSubcategory.options[1].text = t.whtNonResidentLabel;
+  }
+
+  const optionIds = [
+    "whtTypeService",
+    "whtTypeRent",
+    "whtTypeInterestResidentTerm",
+    "whtTypeInterestResidentNoTerm",
+    "whtTypePaymentNonResident",
+  ];
+  const optionLabels = [
+    t.whtServiceLabel,
+    t.whtRentLabel,
+    t.whtInterestResidentTermLabel,
+    t.whtInterestResidentNoTermLabel,
+    t.whtPaymentNonResidentLabel,
+  ];
+  optionIds.forEach((id, index) => {
+    const option = document.getElementById(id);
+    if (option) option.text = optionLabels[index];
+  });
 
   // New inputs
   const elDutyRate = document.getElementById("lblDutyRate");

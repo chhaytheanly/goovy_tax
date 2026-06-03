@@ -1,15 +1,19 @@
 import {
-  WHT_RATE,
+  WHT_RATES,
   PROPERTY_THRESHOLD,
   PROPERTY_RATE,
   TRANSPORTATION_TAX_RATE,
   RENTAL_BUSINESS_DEDUCTION_RATE,
 } from "../config/constants.js";
 
-export function calculateWHT(amount) {
-  const tax = amount * WHT_RATE;
+export function getWHTRate(subcategory, type) {
+  return WHT_RATES[subcategory]?.[type] ?? WHT_RATES.resident.service;
+}
+
+export function calculateWHT(amount, rate) {
+  const tax = Math.round(amount * rate);
   return {
-    taxAmount: Math.round(tax),
+    taxAmount: tax,
     taxableBase: amount,
     total: amount - tax,
   };

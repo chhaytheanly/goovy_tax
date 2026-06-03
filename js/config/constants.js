@@ -1,7 +1,18 @@
 export const STANDARD_RELIEF = 1500000;
 export const DEPENDENT_DEDUCTION = 150000;
 export const VAT_RATE = 0.1;
-export const WHT_RATE = 0.15;
+export const WHT_RATES = {
+  resident: {
+    service: 0.15,
+    rent: 0.1,
+    interestResidentTerm: 0.06,
+    interestResidentNoTerm: 0.04,
+  },
+  nonResident: {
+    paymentNonResident: 0.14,
+  },
+};
+export const WHT_RATE = WHT_RATES.resident.service;
 export const PROPERTY_THRESHOLD = 100000000;
 export const PROPERTY_RATE = 0.001;
 export const TRANSPORTATION_TAX_RATE = 0.05;
