@@ -15,6 +15,7 @@ import {
   calculateRentalIncomeTax,
   calculateTransportationTax,
 } from "./tax/other.js";
+import { calculateIncomeTax } from "./tax/incomeTax.js";
 import { calculateVAT } from "./tax/VAT.js";
 import { updateLanguage } from "./i18n/language.js";
 import { setTranslations } from "./i18n/translations.js";
@@ -50,6 +51,7 @@ async function loadTranslations() {
 function updateCategoryVisibility() {
   const category = elements.taxCategory.value;
   const isSalary = category === "salary";
+  const isIncomeTax = category === "incomeTax";
   const isVat = category === "vat";
   const isRental = category === "rental";
   const isWht = category === "withholding";
@@ -62,6 +64,8 @@ function updateCategoryVisibility() {
 
   elements.baseAmountGroup.style.display =
     (isSalary || isRental || isTransportation || isPatent || isVehicle) ? "none" : "block";
+  const incomeTaxTypeGroup = document.getElementById("incomeTaxTypeGroup");
+  if (incomeTaxTypeGroup) incomeTaxTypeGroup.style.display = isIncomeTax ? "block" : "none";
   const whtSubcategoryGroup = document.getElementById("whtSubcategoryGroup");
   if (whtSubcategoryGroup) whtSubcategoryGroup.style.display = isWht ? "block" : "none";
   const whtTypeGroup = document.getElementById("whtTypeGroup");
@@ -87,8 +91,19 @@ function updateCategoryVisibility() {
   if (isSalary) {
     updateDeductionSummary();
   }
+  if (isIncomeTax) {
+    updateIncomeTaxTypeOptions();
+  }
   if (isWht) {
     updateWhtTypeOptions();
+  }
+}
+
+function updateIncomeTaxTypeOptions() {
+  if (!elements.incomeTaxType) return;
+  const currentType = elements.incomeTaxType.value || "general";
+  if (!["general", "naturalResources", "qip", "soleProprietorship"].includes(currentType)) {
+    elements.incomeTaxType.value = "general";
   }
 }
 
@@ -205,6 +220,20 @@ function calculate() {
       currentLanguage === "en"
         ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Standard Relief: ${deductions.standardRelief.toLocaleString()} KHR, Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, ${taxRateDesc}`
         : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្តង់ដារ: ${deductions.standardRelief.toLocaleString()} រៀល, ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, ${taxRateDesc}`;
+  } else if (category === "incomeTax") {
+    const incomeTaxType = elements.incomeTaxType?.value || "general";
+    const result = calculateIncomeTax(amount, incomeTaxType);
+    taxAmount = result.taxAmount;
+    taxableBase = result.taxableBase;
+    total = result.total;
+    if (incomeTaxType === "soleProprietorship") {
+      totalDeductions = result.deduction;
+    }
+    const typeLabel = elements.incomeTaxType?.selectedOptions[0]?.text || "";
+    breakdown =
+      currentLanguage === "en"
+        ? `Income Tax: ${typeLabel}${incomeTaxType === "soleProprietorship" ? `; Bracket deduction: ${result.deduction.toLocaleString()} KHR` : ""}`
+        : `ពន្ធលើប្រាក់ចំណូល: ${typeLabel}${incomeTaxType === "soleProprietorship" ? `; ការកាត់បន្ថយចំណាត់ថ្នាក់: ${result.deduction.toLocaleString()} រៀល` : ""}`;
   } else if (category === "withholding") {
     const whtSubcategory = elements.whtSubcategory?.value || "resident";
     const whtType = elements.whtType?.value || "service";
@@ -313,6 +342,19 @@ function calculate() {
     `${Math.round(grossAmount).toLocaleString()} KHR`;
   document.getElementById("totalDeductionsValue").innerHTML =
     `${totalDeductions.toLocaleString()} KHR`;
+  
+  // Update label based on category for clarity
+  const taxableLabel = document.getElementById("resTaxableIncome");
+  if (category === "vat") {
+    taxableLabel.textContent = currentLanguage === "en" ? "Base Amount:" : "ចំនួនដើម:";
+  } else if (category === "property") {
+    taxableLabel.textContent = currentLanguage === "en" ? "Property Value:" : "តម្លៃកម្មាង្ងការ:";
+  } else if (category === "rental") {
+    taxableLabel.textContent = currentLanguage === "en" ? "After Deduction:" : "បន្ទាប់ពីកាត់បន្ថយ:";
+  } else {
+    taxableLabel.textContent = currentLanguage === "en" ? "Taxable Income:" : "ប្រាក់ចំណូលដែលត្រូវបង់ពន្ធ:";
+  }
+  
   document.getElementById("taxableIncomeValue").innerHTML =
     `${Math.round(taxableBase).toLocaleString()} KHR`;
   document.getElementById("taxAmountValue").innerHTML =
@@ -329,6 +371,8 @@ elements.taxCategory.addEventListener("change", () => {
   updateCategoryVisibility();
   calculate();
 });
+
+elements.incomeTaxType?.addEventListener("change", calculate);
 
 elements.whtSubcategory?.addEventListener("change", () => {
   updateWhtTypeOptions();

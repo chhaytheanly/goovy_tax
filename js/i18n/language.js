@@ -19,6 +19,8 @@ export function updateLanguage(currentLanguage, elements) {
   document.getElementById("subTitle").innerText = t.subTitle;
   document.getElementById("lblAmount").innerText = t.lblAmount;
   document.getElementById("lblCategory").innerText = t.lblCategory;
+  const lblIncomeTaxType = document.getElementById("lblIncomeTaxType");
+  if (lblIncomeTaxType) lblIncomeTaxType.innerText = t.lblIncomeTaxType;
   const lblWhtSubcategory = document.getElementById("lblWhtSubcategory");
   if (lblWhtSubcategory) lblWhtSubcategory.innerText = t.lblWhtSubcategory;
   const lblWhtType = document.getElementById("lblWhtType");
@@ -72,19 +74,28 @@ export function updateLanguage(currentLanguage, elements) {
   const categorySelect = elements.taxCategory;
   categorySelect.options[0].text = t.vatLabel;
   categorySelect.options[1].text = t.salaryLabel;
-  categorySelect.options[2].text = t.whtLabel;
-  categorySelect.options[3].text = t.propertyLabel;
-  categorySelect.options[4].text = t.rentalLabel;
-  categorySelect.options[5].text = t.transportationLabel;
+  categorySelect.options[2].text = t.incomeTaxLabel;
+  categorySelect.options[3].text = t.whtLabel;
+  categorySelect.options[4].text = t.propertyLabel;
+  categorySelect.options[5].text = t.rentalLabel;
+  categorySelect.options[6].text = t.transportationLabel;
 
   // New tax labels in Select
-  categorySelect.options[6].text = t.accommodationLabel;
-  categorySelect.options[7].text = t.importLabel;
-  categorySelect.options[8].text = t.patentLabel;
-  categorySelect.options[9].text = t.publicLightingLabel;
-  categorySelect.options[10].text = t.specificLabel;
-  categorySelect.options[11].text = t.unusedLandLabel;
-  categorySelect.options[12].text = t.vehicleLabel;
+  categorySelect.options[7].text = t.accommodationLabel;
+  categorySelect.options[8].text = t.importLabel;
+  categorySelect.options[9].text = t.patentLabel;
+  categorySelect.options[10].text = t.publicLightingLabel;
+  categorySelect.options[11].text = t.specificLabel;
+  categorySelect.options[12].text = t.unusedLandLabel;
+  categorySelect.options[13].text = t.vehicleLabel;
+
+  const incomeTaxType = elements.incomeTaxType;
+  if (incomeTaxType) {
+    incomeTaxType.options[0].text = t.optIncomeTaxGeneral;
+    incomeTaxType.options[1].text = t.optIncomeTaxNaturalResources;
+    incomeTaxType.options[2].text = t.optIncomeTaxQip;
+    incomeTaxType.options[3].text = t.optIncomeTaxSoleProprietorship;
+  }
 
   const whtSubcategory = elements.whtSubcategory;
   if (whtSubcategory) {

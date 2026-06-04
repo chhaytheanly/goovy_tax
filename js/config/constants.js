@@ -13,6 +13,18 @@ export const WHT_RATES = {
   },
 };
 export const WHT_RATE = WHT_RATES.resident.service;
+export const INCOME_TAX_RATES = {
+  GENERAL: 0.2,
+  OIL_NATURAL_GAS_TIMBER_MINERALS_GOLD_GEMS: 0.3,
+  QIP: 0,
+};
+export const SOLE_PROPRIETOR_BRACKETS = [
+  { max: 18000000, rate: 0, deduction: 0 },
+  { max: 24000000, rate: 0.05, deduction: 900000 },
+  { max: 102000000, rate: 0.1, deduction: 2100000 },
+  { max: 150000000, rate: 0.15, deduction: 7200000 },
+  { max: Infinity, rate: 0.2, deduction: 14200000 },
+];
 export const PROPERTY_THRESHOLD = 100000000;
 export const PROPERTY_RATE = 0.001;
 export const TRANSPORTATION_TAX_RATE = 0.05;

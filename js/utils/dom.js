@@ -3,6 +3,7 @@ export function getElements() {
     baseAmountGroup: document.getElementById("baseAmountGroup"),
     baseAmount: document.getElementById("baseAmount"),
     taxCategory: document.getElementById("taxCategory"),
+    incomeTaxType: document.getElementById("incomeTaxType"),
     whtSubcategory: document.getElementById("whtSubcategory"),
     whtType: document.getElementById("whtType"),
     vatModeGroup: document.getElementById("vatModeGroup"),

@@ -84,6 +84,9 @@
             <option value="salary" selected>
               Salary Tax on Employment (Progressive)
             </option>
+            <option value="incomeTax">
+              Income Tax (ពន្ធលើប្រាក់ចំណូល)
+            </option>
             <option value="withholding">
               Withholding Tax (WHT)
             </option>
@@ -123,6 +126,16 @@
             <option value="interestResidentTerm" id="whtTypeInterestResidentTerm">Interest to resident - with term (6%)</option>
             <option value="interestResidentNoTerm" id="whtTypeInterestResidentNoTerm">Interest to resident - no term (4%)</option>
             <option value="paymentNonResident" id="whtTypePaymentNonResident">Payment to non-resident (14%)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="incomeTaxTypeGroup" style="display: none">
+          <label id="lblIncomeTaxType"><i class="fa-solid fa-receipt"></i> Income Taxpayer Type</label>
+          <select id="incomeTaxType" class="form-select">
+            <option value="general" id="optIncomeTaxGeneral">Legal entity - general (20%)</option>
+            <option value="naturalResources" id="optIncomeTaxNaturalResources">Oil, natural gas, timber, minerals, gold, gems (30%)</option>
+            <option value="qip" id="optIncomeTaxQip">Qualified Investment Project (QIP) (0% during tax holiday)</option>
+            <option value="soleProprietorship" id="optIncomeTaxSoleProprietorship">Sole proprietorship (progressive)</option>
           </select>
         </div>
 
