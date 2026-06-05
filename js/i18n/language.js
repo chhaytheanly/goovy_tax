@@ -64,12 +64,7 @@ export function updateLanguage(currentLanguage, elements) {
   document.getElementById("transportationHint").innerText =
     t.transportationHint;
   document.getElementById("resultsTitle").innerText = t.resultsTitle;
-  document.getElementById("resGrossAmount").innerText = t.resGrossAmount;
-  document.getElementById("resTotalDeductions").innerText =
-    t.resTotalDeductions;
-  document.getElementById("resTaxableIncome").innerText = t.resTaxableIncome;
   document.getElementById("resTaxAmount").innerText = t.resTaxAmount;
-  document.getElementById("resNetPayable").innerText = t.resNetPayable;
 
   const categorySelect = elements.taxCategory;
   categorySelect.options[0].text = t.vatLabel;

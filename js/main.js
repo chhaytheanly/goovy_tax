@@ -338,29 +338,8 @@ function calculate() {
         : `ពន្ធការដឹក: ៥% លើការចំណាយដឹកជញ្ជូនប្រចាំខែ`;
   }
 
-  document.getElementById("grossAmountValue").innerHTML =
-    `${Math.round(grossAmount).toLocaleString()} KHR`;
-  document.getElementById("totalDeductionsValue").innerHTML =
-    `${totalDeductions.toLocaleString()} KHR`;
-  
-  // Update label based on category for clarity
-  const taxableLabel = document.getElementById("resTaxableIncome");
-  if (category === "vat") {
-    taxableLabel.textContent = currentLanguage === "en" ? "Base Amount:" : "ចំនួនដើម:";
-  } else if (category === "property") {
-    taxableLabel.textContent = currentLanguage === "en" ? "Property Value:" : "តម្លៃកម្មាង្ងការ:";
-  } else if (category === "rental") {
-    taxableLabel.textContent = currentLanguage === "en" ? "After Deduction:" : "បន្ទាប់ពីកាត់បន្ថយ:";
-  } else {
-    taxableLabel.textContent = currentLanguage === "en" ? "Taxable Income:" : "ប្រាក់ចំណូលដែលត្រូវបង់ពន្ធ:";
-  }
-  
-  document.getElementById("taxableIncomeValue").innerHTML =
-    `${Math.round(taxableBase).toLocaleString()} KHR`;
   document.getElementById("taxAmountValue").innerHTML =
     `${taxAmount.toLocaleString()} KHR`;
-  document.getElementById("netPayableValue").innerHTML =
-    `${Math.round(total).toLocaleString()} KHR`;
 
   const breakdownElement = document.getElementById("taxBreakdown");
   breakdownElement.innerHTML = breakdown;
