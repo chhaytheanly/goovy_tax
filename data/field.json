@@ -31,7 +31,6 @@
     "optIncomeTaxNaturalResources": "Oil, natural gas, timber, minerals, gold, gems (30%)",
     "optIncomeTaxQip": "Qualified Investment Project (QIP) (0% during tax holiday)",
     "optIncomeTaxSoleProprietorship": "Sole proprietorship (progressive)",
-    // "optIncomeTaxLifeInsurance": "Life Insurance (20%)",
     "optIncomeTaxGeneralInsurance": "General Insurance (5%)",
     "whtLabel": "Withholding Tax (WHT)",
     "lblWhtSubcategory": "WHT Subcategory",
