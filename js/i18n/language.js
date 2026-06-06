@@ -50,7 +50,7 @@ export function updateLanguage(currentLanguage, elements) {
   document.getElementById("lblOtherDependents").innerText =
     t.lblOtherDependents;
   document.getElementById("otherHint").innerText = t.otherHint;
-  document.getElementById("lblStandardRelief").innerText = t.lblStandardRelief;
+  // document.getElementById("lblStandardRelief").innerText = t.lblStandardRelief;
   document.getElementById("lblSpouseDeduction").innerText =
     t.lblSpouseDeduction;
   document.getElementById("lblChildrenDeduction").innerText =
@@ -89,7 +89,9 @@ export function updateLanguage(currentLanguage, elements) {
     incomeTaxType.options[0].text = t.optIncomeTaxGeneral;
     incomeTaxType.options[1].text = t.optIncomeTaxNaturalResources;
     incomeTaxType.options[2].text = t.optIncomeTaxQip;
-    incomeTaxType.options[3].text = t.optIncomeTaxSoleProprietorship;
+    // incomeTaxType.options[3].text = t.optIncomeTaxLifeInsurance;
+    incomeTaxType.options[3].text = t.optIncomeTaxGeneralInsurance;
+    incomeTaxType.options[4].text = t.optIncomeTaxSoleProprietorship;
   }
 
   const whtSubcategory = elements.whtSubcategory;

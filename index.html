@@ -132,10 +132,12 @@
         <div class="form-group" id="incomeTaxTypeGroup" style="display: none">
           <label id="lblIncomeTaxType"><i class="fa-solid fa-receipt"></i> Income Taxpayer Type</label>
           <select id="incomeTaxType" class="form-select">
-            <option value="general" id="optIncomeTaxGeneral">Legal entity - general (20%)</option>
+            <option value="general" id="optIncomeTaxGeneral">Legal entity - general Or Life Insurance (20%)</option>
             <option value="naturalResources" id="optIncomeTaxNaturalResources">Oil, natural gas, timber, minerals, gold, gems (30%)</option>
             <option value="qip" id="optIncomeTaxQip">Qualified Investment Project (QIP) (0% during tax holiday)</option>
             <option value="soleProprietorship" id="optIncomeTaxSoleProprietorship">Sole proprietorship (progressive)</option>
+            <!-- <option value="lifeInsurance" id="optIncomeTaxLifeInsurance">Life Insurance (20%)</option> -->
+            <option value="generalInsurance" id="optIncomeTaxGeneralInsurance">General Insurance (5%)</option>
           </select>
         </div>
 
@@ -144,11 +146,11 @@
           <div class="radio-group">
             <label class="radio-label">
               <input type="radio" name="vatMode" value="exclusive" checked />
-              <span id="optExclusive">Exclusive (Add VAT)</span>
+              <span id="optExclusive">Exclusive(Without VAT)</span>
             </label>
             <label class="radio-label">
               <input type="radio" name="vatMode" value="inclusive" />
-              <span id="optInclusive">Inclusive (VAT Included)</span>
+              <span id="optInclusive">Inclusive(With VAT)</span>
             </label>
           </div>
         </div>
@@ -230,16 +232,16 @@
 
           <div class="form-group">
             <label id="lblOtherDependents"><i class="fa-solid fa-hand-holding-heart"></i> Other Dependents
-              (Parents/Siblings)</label>
+              (Note under 25 years old)</label>
             <input type="number" id="otherDependents" class="form-input" min="0" max="10" value="0" />
             <small id="otherHint" class="hint-text">*Each dependent gives 150,000 KHR deduction per month</small>
           </div>
 
           <div class="deduction-summary" id="deductionSummary">
-            <div class="summary-item">
+            <!-- <div class="summary-item">
               <span id="lblStandardRelief">Standard Relief:</span>
               <span id="standardReliefValue">1,500,000 KHR</span>
-            </div>
+            </div> -->
             <div class="summary-item">
               <span id="lblSpouseDeduction">Spouse Deduction:</span>
               <span id="spouseDeductionValue">0 KHR</span>

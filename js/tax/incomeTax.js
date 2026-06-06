@@ -23,6 +23,10 @@ export function calculateIncomeTax(amount, type) {
       rate = INCOME_TAX_RATES.QIP;
       taxAmount = 0;
       break;
+    case "generalInsurance":
+      rate = INCOME_TAX_RATES.General_Insurance;
+      taxAmount = Math.round(amount * rate);
+      break;
     case "soleProprietorship":
       {
         const bracket = SOLE_PROPRIETOR_BRACKETS.find((item) => amount <= item.max);

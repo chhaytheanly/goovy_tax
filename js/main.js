@@ -102,7 +102,8 @@ function updateCategoryVisibility() {
 function updateIncomeTaxTypeOptions() {
   if (!elements.incomeTaxType) return;
   const currentType = elements.incomeTaxType.value || "general";
-  if (!["general", "naturalResources", "qip", "soleProprietorship"].includes(currentType)) {
+  // if (!["general", "naturalResources", "qip", "soleProprietorship"].includes(currentType)) {
+  if (!["general", "naturalResources", "qip", "generalInsurance", "soleProprietorship"].includes(currentType)) {
     elements.incomeTaxType.value = "general";
   }
 }
@@ -137,8 +138,8 @@ function updateWhtTypeOptions() {
 function updateDeductionSummary() {
   const deductions = getSalaryDeductions();
 
-  document.getElementById("standardReliefValue").innerHTML =
-    `${deductions.standardRelief.toLocaleString()} KHR`;
+  // document.getElementById("standardReliefValue").innerHTML =
+  //   `${deductions.standardRelief.toLocaleString()} KHR`;
   document.getElementById("spouseDeductionValue").innerHTML =
     `${deductions.spouseDeduction.toLocaleString()} KHR`;
   document.getElementById("childrenDeductionValue").innerHTML =
@@ -218,8 +219,10 @@ function calculate() {
 
     breakdown =
       currentLanguage === "en"
-        ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Standard Relief: ${deductions.standardRelief.toLocaleString()} KHR, Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, ${taxRateDesc}`
-        : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្តង់ដារ: ${deductions.standardRelief.toLocaleString()} រៀល, ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, ${taxRateDesc}`;
+        // ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Standard Relief: ${deductions.standardRelief.toLocaleString()} KHR, Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, ${taxRateDesc}`
+        // : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្តង់ដារ: ${deductions.standardRelief.toLocaleString()} រៀល, ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, ${taxRateDesc}`;
+        ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, ${taxRateDesc}`
+        : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, ${taxRateDesc}`;
   } else if (category === "incomeTax") {
     const incomeTaxType = elements.incomeTaxType?.value || "general";
     const result = calculateIncomeTax(amount, incomeTaxType);

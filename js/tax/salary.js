@@ -11,7 +11,8 @@ export function calculateSalaryDeductions({
   otherDependents,
   isForeigner,
 }) {
-  let standardRelief = isForeigner ? 0 : STANDARD_RELIEF;
+  // let standardRelief = isForeigner ? 0 : STANDARD_RELIEF;
+  let standardRelief = 0;
   let spouseDeduction =
     !isForeigner && spouseStatus === "housewife" ? DEPENDENT_DEDUCTION : 0;
   let childrenDeduction = !isForeigner
@@ -19,7 +20,7 @@ export function calculateSalaryDeductions({
     : 0;
   let otherDeduction = !isForeigner ? otherDependents * DEPENDENT_DEDUCTION : 0;
   let totalDeductions =
-    standardRelief + spouseDeduction + childrenDeduction + otherDeduction;
+    spouseDeduction + childrenDeduction + otherDeduction;
 
   return {
     monthlySalary,

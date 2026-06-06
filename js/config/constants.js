@@ -17,6 +17,8 @@ export const INCOME_TAX_RATES = {
   GENERAL: 0.2,
   OIL_NATURAL_GAS_TIMBER_MINERALS_GOLD_GEMS: 0.3,
   QIP: 0,
+  // Life_Insurance: 0.2,
+  General_Insurance: 0.05
 };
 export const SOLE_PROPRIETOR_BRACKETS = [
   { max: 18000000, rate: 0, deduction: 0 },
