@@ -38,6 +38,7 @@ export function updateLanguage(currentLanguage, elements) {
   if (optVatExport) optVatExport.innerText = t.optVatExport;
   document.getElementById("deductionsTitle").innerText = t.deductionsTitle;
   document.getElementById("lblMonthlyIncome").innerText = t.lblMonthlyIncome;
+  document.getElementById("lblFringeBenefit").innerText = t.lblFringeBenefit;
   document.getElementById("lblForeignerStatus").innerText =
     t.lblForeignerStatus;
   document.getElementById("optLocalResident").innerText = t.optLocalResident;

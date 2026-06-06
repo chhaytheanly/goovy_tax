@@ -167,15 +167,22 @@ function getSalaryDeductions() {
     monthlySalaryRaw,
     getSelectedCurrency("salaryCurrency"),
   );
-  const foreignerStatus = elements.foreignerStatus
-    ? elements.foreignerStatus.value
-    : "local";
+  const fringeBenefitRaw =
+    parseFloat(elements.fringeBenefit.value.replace(/,/g, "")) || 0;
+  const fringeBenefit = convertToKhr(
+    fringeBenefitRaw,
+    getSelectedCurrency("fringeCurrency"),
+  );
+  const foreignerStatus =
+    document.querySelector('input[name="foreignerStatus"]:checked')?.value ||
+    "local";
   const spouseStatus = elements.spouseStatus.value;
   const childrenCount = parseInt(elements.childrenCount.value, 10) || 0;
   const otherDependents = parseInt(elements.otherDependents.value, 10) || 0;
   const isForeigner = foreignerStatus === "foreigner";
   return calculateSalaryDeductions({
     monthlySalary,
+    fringeBenefit,
     spouseStatus,
     childrenCount,
     otherDependents,
@@ -213,9 +220,11 @@ function calculate() {
         : `VAT calculated using ${vatCaseLabel} (${vatMode === "exclusive" ? "added to base" : "included in amount"})`;
   } else if (category === "salary") {
     const deductions = getSalaryDeductions();
-    grossAmount = deductions.monthlySalary;
+    grossAmount = deductions.monthlySalary + deductions.fringeBenefit;
     taxableBase = deductions.taxableIncome;
-    taxAmount = calculateSalaryTax(taxableBase, deductions.isForeigner);
+    const baseSalaryTax = calculateSalaryTax(taxableBase, deductions.isForeigner);
+    const fringeTax = Math.round(deductions.fringeBenefit * 0.2);
+    taxAmount = baseSalaryTax + fringeTax;
     total = grossAmount - taxAmount;
     totalDeductions = deductions.totalDeductions;
 
@@ -229,10 +238,8 @@ function calculate() {
 
     breakdown =
       currentLanguage === "en"
-        // ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Standard Relief: ${deductions.standardRelief.toLocaleString()} KHR, Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, ${taxRateDesc}`
-        // : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្តង់ដារ: ${deductions.standardRelief.toLocaleString()} រៀល, ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, ${taxRateDesc}`;
-        ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, ${taxRateDesc}`
-        : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, ${taxRateDesc}`;
+        ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, ${taxRateDesc}; Fringe Benefit Tax: ${Math.round(deductions.fringeBenefit * 0.2).toLocaleString()} KHR`
+        : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, ${taxRateDesc}; ពន្ធអត្រាអត្ថប្រយោជន៍: ${Math.round(deductions.fringeBenefit * 0.2).toLocaleString()} រៀល`;
   } else if (category === "incomeTax") {
     const incomeTaxType = elements.incomeTaxType?.value || "general";
     const result = calculateIncomeTax(amount, incomeTaxType);
@@ -393,9 +400,16 @@ elements.monthlySalary.addEventListener("input", (e) => {
   calculate();
 });
 
-elements.foreignerStatus.addEventListener("change", () => {
-  updateDeductionSummary();
+elements.fringeBenefit.addEventListener("input", (e) => {
+  formatCurrencyInput(e);
   calculate();
+});
+
+document.querySelectorAll('input[name="foreignerStatus"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+    updateDeductionSummary();
+    calculate();
+  });
 });
 
 elements.spouseStatus.addEventListener("change", () => {

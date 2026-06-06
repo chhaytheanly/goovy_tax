@@ -6,6 +6,7 @@ import {
 
 export function calculateSalaryDeductions({
   monthlySalary,
+  fringeBenefit = 0,
   spouseStatus,
   childrenCount,
   otherDependents,
@@ -24,6 +25,7 @@ export function calculateSalaryDeductions({
 
   return {
     monthlySalary,
+    fringeBenefit,
     spouseDeduction,
     childrenDeduction,
     otherDeduction,

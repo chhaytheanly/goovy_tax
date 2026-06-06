@@ -10,7 +10,7 @@ export function getElements() {
     vatTypeGroup: document.getElementById("vatTypeGroup"),
     salaryDeductionsSection: document.getElementById("salaryDeductionsSection"),
     monthlySalary: document.getElementById("monthlySalary"),
-    foreignerStatus: document.getElementById("foreignerStatus"),
+    fringeBenefit: document.getElementById("fringeBenefit"),
     spouseStatus: document.getElementById("spouseStatus"),
     childrenCount: document.getElementById("childrenCount"),
     otherDependents: document.getElementById("otherDependents"),
@@ -41,7 +41,7 @@ export function getVatType() {
 
 export function getCurrencyRadios() {
   return document.querySelectorAll(
-    'input[name="baseCurrency"], input[name="salaryCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"], input[name="propertyCurrency"]',
+    'input[name="baseCurrency"], input[name="salaryCurrency"], input[name="fringeCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"], input[name="propertyCurrency"]',
   );
 }
 
