@@ -20,6 +20,11 @@ export function getElements() {
       "transportationExpenseGroup",
     ),
     transportationExpense: document.getElementById("transportationExpense"),
+    propertyModeGroup: document.getElementById("propertyModeGroup"),
+    propertyValueGroup: document.getElementById("propertyValueGroup"),
+    propertyValue: document.getElementById("propertyValue"),
+    propertySurfaceGroup: document.getElementById("propertySurfaceGroup"),
+    propertySurface: document.getElementById("propertySurface"),
     calculateBtn: document.getElementById("calculateBtn"),
   };
 }
@@ -36,7 +41,7 @@ export function getVatType() {
 
 export function getCurrencyRadios() {
   return document.querySelectorAll(
-    'input[name="baseCurrency"], input[name="salaryCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"]',
+    'input[name="baseCurrency"], input[name="salaryCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"], input[name="propertyCurrency"]',
   );
 }
 

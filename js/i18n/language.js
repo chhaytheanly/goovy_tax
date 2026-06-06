@@ -63,6 +63,12 @@ export function updateLanguage(currentLanguage, elements) {
     t.lblTransportationExpense;
   document.getElementById("transportationHint").innerText =
     t.transportationHint;
+  document.getElementById("lblPropertyMode").innerText = t.lblPropertyMode;
+  document.getElementById("optPropertyUsed").innerText = t.optPropertyUsed;
+  document.getElementById("optPropertyUnused").innerText = t.optPropertyUnused;
+  document.getElementById("lblPropertyValue").innerText = t.lblPropertyValue;
+  document.getElementById("lblPropertySurface").innerText = t.lblPropertySurface;
+  document.getElementById("propertySurfaceHint").innerText = t.propertySurfaceHint;
   document.getElementById("resultsTitle").innerText = t.resultsTitle;
   document.getElementById("resTaxAmount").innerText = t.resTaxAmount;
 
@@ -81,8 +87,7 @@ export function updateLanguage(currentLanguage, elements) {
   categorySelect.options[9].text = t.patentLabel;
   categorySelect.options[10].text = t.publicLightingLabel;
   categorySelect.options[11].text = t.specificLabel;
-  categorySelect.options[12].text = t.unusedLandLabel;
-  categorySelect.options[13].text = t.vehicleLabel;
+  categorySelect.options[12].text = t.vehicleLabel;
 
   const incomeTaxType = elements.incomeTaxType;
   if (incomeTaxType) {

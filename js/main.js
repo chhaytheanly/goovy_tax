@@ -24,7 +24,6 @@ import { calculateImportDuty } from "./tax/importDuty.js";
 import { calculatePatentTax } from "./tax/patent.js";
 import { calculatePublicLightingTax } from "./tax/publicLightingTax.js";
 import { calculateSpecificTax } from "./tax/specificTax.js";
-import { calculateUnusedLandTax } from "./tax/unusedLand.js";
 import { calculateVehicleTax } from "./tax/vehicleTax.js";
 
 
@@ -61,9 +60,10 @@ function updateCategoryVisibility() {
   const isVehicle = category === "vehicle";
   const isImport = category === "import";
   const isSpecific = category === "specific";
+  const isProperty = category === "property";
 
   elements.baseAmountGroup.style.display =
-    (isSalary || isRental || isTransportation || isPatent || isVehicle) ? "none" : "block";
+    (isSalary || isRental || isTransportation || isPatent || isVehicle || isProperty) ? "none" : "block";
   const incomeTaxTypeGroup = document.getElementById("incomeTaxTypeGroup");
   if (incomeTaxTypeGroup) incomeTaxTypeGroup.style.display = isIncomeTax ? "block" : "none";
   const whtSubcategoryGroup = document.getElementById("whtSubcategoryGroup");
@@ -87,6 +87,11 @@ function updateCategoryVisibility() {
   
   const vehicleGroup = document.getElementById("vehicleGroup");
   if(vehicleGroup) vehicleGroup.style.display = isVehicle ? "block" : "none";
+
+  elements.propertyModeGroup.style.display = isProperty ? "block" : "none";
+  elements.propertyValueGroup.style.display = isProperty ? "block" : "none";
+  elements.propertySurfaceGroup.style.display =
+    isProperty && getPropertyMode() === "unused" ? "block" : "none";
 
   if (isSalary) {
     updateDeductionSummary();
@@ -133,6 +138,11 @@ function updateWhtTypeOptions() {
     }
     elements.whtType.value = "paymentNonResident";
   }
+}
+
+function getPropertyMode() {
+  const selected = document.querySelector('input[name="propertyMode"]:checked');
+  return selected ? selected.value : "used";
 }
 
 function updateDeductionSummary() {
@@ -252,14 +262,34 @@ function calculate() {
         ? `Withholding Tax (WHT): ${whtSubcategoryLabel} - ${whtTypeLabel}`
         : `ពន្ធកាត់ទុក (WHT): ${whtSubcategoryLabel} - ${whtTypeLabel}`;
   } else if (category === "property") {
-    const result = calculatePropertyTax(amount);
-    taxAmount = result.taxAmount;
-    taxableBase = result.taxableBase;
-    total = result.total;
-    breakdown =
-      currentLanguage === "en"
-        ? `Property Tax: 0.1% on value exceeding 100,000,000 KHR`
-        : `ពន្ធអចលនទ្រព្យ: ០.១% លើតម្លៃលើស 100,000,000 រៀល`;
+    const propertyMode = getPropertyMode();
+    const propertyValueRaw = parseFloat(elements.propertyValue.value.replace(/,/g, "")) || 0;
+    const propertyValue = convertToKhr(
+      propertyValueRaw,
+      getSelectedCurrency("propertyCurrency"),
+    );
+
+    if (propertyMode === "used") {
+      const result = calculatePropertyTax(propertyValue);
+      taxAmount = result.taxAmount;
+      taxableBase = result.taxableBase;
+      total = result.total;
+      breakdown =
+        currentLanguage === "en"
+          ? `Property Tax (Used): ((value × 80%) - 100,000,000) × 0.1%`
+          : `ពន្ធអចលនទ្រព្យប្រើប្រាស់: ០.១% លើតម្លៃលើស 100,000,000 រៀល`;
+    } else {
+      const propertySurface = parseFloat(elements.propertySurface.value) || 0;
+      const taxableSurface = Math.max(propertySurface - 50000, 0);
+      const tax = Math.round(taxableSurface * propertyValue * 0.02);
+      taxAmount = tax;
+      taxableBase = taxableSurface;
+      total = Math.round(propertyValue * propertySurface - tax);
+      breakdown =
+        currentLanguage === "en"
+          ? `Unused Property Tax: ((surface - 50,000) × value) × 2%`
+          : `ពន្ធដីមិនប្រើប្រាស់: ((ផ្ទៃ - 50,000) × តម្លៃ) × 2%`;
+    }
   } else if (category === "rental") {
     amountRaw = parseFloat(elements.rentalIncome.value.replace(/,/g, "")) || 0;
     amount = convertToKhr(amountRaw, getSelectedCurrency("rentalCurrency"));
@@ -312,12 +342,6 @@ function calculate() {
     taxableBase = result.taxableBase;
     total = result.total;
     breakdown = currentLanguage === "en" ? `Specific Tax: ${(specRate*100).toFixed(0)}% on specific goods` : `អាករពិសេស: ${(specRate*100).toFixed(0)}% លើទំនិញពិសេស`;
-  } else if (category === "unusedLand") {
-    const result = calculateUnusedLandTax(amount);
-    taxAmount = result.taxAmount;
-    taxableBase = result.taxableBase;
-    total = result.total;
-    breakdown = currentLanguage === "en" ? "Unused Land Tax: 2% on market value of unused land" : "ពន្ធដីធ្លីមិនបានប្រើប្រាស់: ២% លើតម្លៃទីផ្សារនៃដីមិនបានប្រើប្រាស់";
   } else if (category === "vehicle") {
     const vType = document.getElementById("vehicleType").value;
     const result = calculateVehicleTax(vType);
@@ -402,6 +426,17 @@ elements.transportationExpense.addEventListener("input", (e) => {
 elements.baseAmount.addEventListener("input", (e) => {
   formatCurrencyInput(e);
   calculate();
+});
+elements.propertyValue.addEventListener("input", (e) => {
+  formatCurrencyInput(e);
+  calculate();
+});
+elements.propertySurface.addEventListener("input", calculate);
+document.querySelectorAll('input[name="propertyMode"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+    updateCategoryVisibility();
+    calculate();
+  });
 });
 getVatModeRadios().forEach((radio) => {
   radio.addEventListener("change", calculate);
