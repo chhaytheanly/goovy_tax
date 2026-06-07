@@ -279,6 +279,8 @@ function calculate() {
     vatResult = result;
     taxableBase = purchasingAmount;
     total = purchasingAmount + sellingAmount;
+    const modeLabel = (mode) =>
+      mode === "exclusive" ? "Exclusive (Without VAT)" : "Inclusive (With VAT)";
     const purchasingCaseLabel =
       purchasingVatCase === "withVat"
         ? "Supply with VAT (10%)"
@@ -289,19 +291,13 @@ function calculate() {
         : sellingVatCase === "import"
           ? "Import 10%"
           : "Export 0%";
-    const purchasingModeLabel =
-      purchasingVatMode === "exclusive"
-        ? "Exclusive(Without VAT)"
-        : "Inclusive(With VAT)";
-    const outputModeLabel =
-      outputVatMode === "exclusive"
-        ? "Exclusive(Without VAT)"
-        : "Inclusive(With VAT)";
 
+    const vatOv = result.outputVAT.toLocaleString();
+    const vatIv = result.inputVAT.toLocaleString();
     breakdown =
       currentLanguage === "en"
-        ? `Output VAT: ${result.outputVAT.toLocaleString()} KHR (${purchasingModeLabel}, ${purchasingCaseLabel}); Input VAT: ${result.inputVAT.toLocaleString()} KHR (${outputModeLabel}, ${sellingCaseLabel}); Tax = Output VAT - Input VAT`
-        : `អាករលើធាតុចេញ (Output VAT): ${result.outputVAT.toLocaleString()} KHR (${purchasingModeLabel}, ${purchasingCaseLabel}); អាករលើធាតុចូល (Input VAT): ${result.inputVAT.toLocaleString()} KHR (${outputModeLabel}, ${sellingCaseLabel}); Tax = អាករលើធាតុចេញ (Output VAT) - អាករលើធាតុចូល (Input VAT)`;
+        ? `<div class="bd"><div class="bd-title">VAT (Value Added Tax)</div><div class="bd-row"><span class="bd-label">Output VAT (from Sales)</span><span class="bd-value">${vatOv} KHR</span></div><div class="bd-row bd-indent"><span class="bd-label">Sales Amount</span><span class="bd-value">${sellingAmount.toLocaleString()} KHR (${modeLabel(outputVatMode)}, ${sellingCaseLabel})</span></div><div class="bd-row"><span class="bd-label">Input VAT (from Purchases)</span><span class="bd-value">${vatIv} KHR</span></div><div class="bd-row bd-indent"><span class="bd-label">Purchases Amount</span><span class="bd-value">${purchasingAmount.toLocaleString()} KHR (${modeLabel(purchasingVatMode)}, ${purchasingCaseLabel})</span></div><div class="bd-formula">Tax Payable = Output VAT − Input VAT<br>= ${vatOv} − ${vatIv} = ${result.tax.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${result.tax.toLocaleString()} KHR</span></div></div>`
+        : `<div class="bd"><div class="bd-title">អាករលើតម្លៃបន្ថែម (VAT)</div><div class="bd-row"><span class="bd-label">អាករលើធាតុចេញ (ពីការលក់)</span><span class="bd-value">${vatOv} KHR</span></div><div class="bd-row bd-indent"><span class="bd-label">ទឹកប្រាក់លក់</span><span class="bd-value">${sellingAmount.toLocaleString()} KHR (${modeLabel(outputVatMode)}, ${sellingCaseLabel})</span></div><div class="bd-row"><span class="bd-label">អាករលើធាតុចូល (ពីការទិញ)</span><span class="bd-value">${vatIv} KHR</span></div><div class="bd-row bd-indent"><span class="bd-label">ទឹកប្រាក់ទិញ</span><span class="bd-value">${purchasingAmount.toLocaleString()} KHR (${modeLabel(purchasingVatMode)}, ${purchasingCaseLabel})</span></div><div class="bd-formula">ពន្ធត្រូវបង់ = អាករលើធាតុចេញ − អាករលើធាតុចូល<br>= ${vatOv} − ${vatIv} = ${result.tax.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${result.tax.toLocaleString()} KHR</span></div></div>`;
   } else if (category === "salary") {
     const deductions = getSalaryDeductions();
     grossAmount = deductions.monthlySalary + deductions.fringeBenefit;
@@ -320,10 +316,11 @@ function calculate() {
         ? "Progressive rates: 0%→5%→10%→15%→20%"
         : "អត្រារីកចម្រើន: ០%→៥%→១០%→១៥%→២០%";
 
+    const fringeTaxVal = Math.round(deductions.fringeBenefit * 0.2);
     breakdown =
       currentLanguage === "en"
-        ? `Tax Calculation (Official: Prakas No. 575, Sept 2024): Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR, ${taxRateDesc}; Fringe Benefit Tax: ${Math.round(deductions.fringeBenefit * 0.2).toLocaleString()} KHR`
-        : `ការគណនាពន្ធ (ផ្លូវការ: Prakas No. 575, កញ្ញា 2024): ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.childrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល, ${taxRateDesc}; ពន្ធអត្រាអត្ថប្រយោជន៍: ${Math.round(deductions.fringeBenefit * 0.2).toLocaleString()} រៀល`;
+        ? `<div class="bd"><div class="bd-title">Tax on Salary</div><div class="bd-sub">Income</div><div class="bd-row"><span class="bd-label">Monthly Salary</span><span class="bd-value">${deductions.monthlySalary.toLocaleString()} KHR</span></div><div class="bd-sub">Deductions</div><div class="bd-row bd-indent"><span class="bd-label">Spouse</span><span class="bd-value">${deductions.spouseDeduction.toLocaleString()} KHR</span></div><div class="bd-row bd-indent"><span class="bd-label">Children (${elements.childrenCount.value || 0} × 150,000)</span><span class="bd-value">${deductions.childrenDeduction.toLocaleString()} KHR</span></div><div class="bd-row bd-indent"><span class="bd-label">Other Dependents (${elements.otherDependents.value || 0} × 150,000)</span><span class="bd-value">${deductions.otherDeduction.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Total Deductions</span><span class="bd-value">${deductions.totalDeductions.toLocaleString()} KHR</span></div><div class="bd-formula">Taxable Salary = ${deductions.monthlySalary.toLocaleString()} − ${deductions.totalDeductions.toLocaleString()} = ${taxableBase.toLocaleString()} KHR</div><div class="bd-row"><span class="bd-label">Taxable Salary</span><span class="bd-value">${taxableBase.toLocaleString()} KHR</span></div><div class="bd-sub">Tax Calculation</div><div class="bd-row"><span class="bd-label">${taxRateDesc}</span></div><div class="bd-row"><span class="bd-label">Base Salary Tax</span><span class="bd-value">${baseSalaryTax.toLocaleString()} KHR</span></div>${deductions.fringeBenefit > 0 ? `<div class="bd-sub">Fringe Benefit</div><div class="bd-row"><span class="bd-label">Fringe Benefit Amount</span><span class="bd-value">${deductions.fringeBenefit.toLocaleString()} KHR</span></div><div class="bd-formula">Fringe Tax = ${deductions.fringeBenefit.toLocaleString()} × 20% = ${fringeTaxVal.toLocaleString()} KHR</div>` : ''}<div class="bd-row bd-divider"><span class="bd-result-label">Total Tax Payable</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+        : `<div class="bd"><div class="bd-title">ពន្ធលើប្រាក់ខែ</div><div class="bd-sub">ចំណូល</div><div class="bd-row"><span class="bd-label">ប្រាក់ខែប្រចាំខែ</span><span class="bd-value">${deductions.monthlySalary.toLocaleString()} រៀល</span></div><div class="bd-sub">ការកាត់បន្ថយ</div><div class="bd-row bd-indent"><span class="bd-label">ស្វាមី/ភរិយា</span><span class="bd-value">${deductions.spouseDeduction.toLocaleString()} រៀល</span></div><div class="bd-row bd-indent"><span class="bd-label">កូន (${elements.childrenCount.value || 0} × 150,000)</span><span class="bd-value">${deductions.childrenDeduction.toLocaleString()} រៀល</span></div><div class="bd-row bd-indent"><span class="bd-label">អ្នកនៅក្នុងបន្ទុក (${elements.otherDependents.value || 0} × 150,000)</span><span class="bd-value">${deductions.otherDeduction.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">ការកាត់បន្ថយសរុប</span><span class="bd-value">${deductions.totalDeductions.toLocaleString()} រៀល</span></div><div class="bd-formula">ប្រាក់ខែជាប់ពន្ធ = ${deductions.monthlySalary.toLocaleString()} − ${deductions.totalDeductions.toLocaleString()} = ${taxableBase.toLocaleString()} រៀល</div><div class="bd-row"><span class="bd-label">ប្រាក់ខែជាប់ពន្ធ</span><span class="bd-value">${taxableBase.toLocaleString()} រៀល</span></div><div class="bd-sub">ការគណនាពន្ធ</div><div class="bd-row"><span class="bd-label">${taxRateDesc}</span></div><div class="bd-row"><span class="bd-label">ពន្ធប្រាក់ខែគោល</span><span class="bd-value">${baseSalaryTax.toLocaleString()} រៀល</span></div>${deductions.fringeBenefit > 0 ? `<div class="bd-sub">អត្ថប្រយោជន៍</div><div class="bd-row"><span class="bd-label">ទឹកប្រាក់អត្ថប្រយោជន៍</span><span class="bd-value">${deductions.fringeBenefit.toLocaleString()} រៀល</span></div><div class="bd-formula">ពន្ធអត្ថប្រយោជន៍ = ${deductions.fringeBenefit.toLocaleString()} × 20% = ${fringeTaxVal.toLocaleString()} រៀល</div>` : ''}<div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធសរុបត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
   } else if (category === "incomeTax") {
     const incomeTaxType = elements.incomeTaxType?.value || "general";
     const result = calculateIncomeTax(amount, incomeTaxType);
@@ -334,10 +331,18 @@ function calculate() {
       totalDeductions = result.deduction;
     }
     const typeLabel = elements.incomeTaxType?.selectedOptions[0]?.text || "";
-    breakdown =
-      currentLanguage === "en"
-        ? `Income Tax: ${typeLabel}${incomeTaxType === "soleProprietorship" ? `; Bracket deduction: ${result.deduction.toLocaleString()} KHR` : ""}`
-        : `ពន្ធលើប្រាក់ចំណូល: ${typeLabel}${incomeTaxType === "soleProprietorship" ? `; ការកាត់បន្ថយចំណាត់ថ្នាក់: ${result.deduction.toLocaleString()} រៀល` : ""}`;
+    const ratePct = Math.round(result.rate * 100);
+    if (incomeTaxType === "soleProprietorship") {
+      breakdown =
+        currentLanguage === "en"
+          ? `<div class="bd"><div class="bd-title">Income Tax (Sole Proprietorship)</div><div class="bd-row"><span class="bd-label">Taxable Income</span><span class="bd-value">${amount.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Progressive Bracket Rate</span><span class="bd-value">${ratePct}%</span></div><div class="bd-row"><span class="bd-label">Bracket Deduction</span><span class="bd-value">${result.deduction.toLocaleString()} KHR</span></div><div class="bd-formula">Tax = (${amount.toLocaleString()} × ${ratePct}%) − ${result.deduction.toLocaleString()}<br>= ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+          : `<div class="bd"><div class="bd-title">ពន្ធលើប្រាក់ចំណូល (សហគ្រាសឯកបុគ្គល)</div><div class="bd-row"><span class="bd-label">ប្រាក់ចំណូលជាប់ពន្ធ</span><span class="bd-value">${amount.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រារីកចម្រើន</span><span class="bd-value">${ratePct}%</span></div><div class="bd-row"><span class="bd-label">ការកាត់បន្ថយតាមចំណាត់ថ្នាក់</span><span class="bd-value">${result.deduction.toLocaleString()} រៀល</span></div><div class="bd-formula">ពន្ធ = (${amount.toLocaleString()} × ${ratePct}%) − ${result.deduction.toLocaleString()}<br>= ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
+    } else {
+      breakdown =
+        currentLanguage === "en"
+          ? `<div class="bd"><div class="bd-title">Income Tax</div><div class="bd-row"><span class="bd-label">Taxpayer Type</span><span class="bd-value">${typeLabel}</span></div><div class="bd-row"><span class="bd-label">Taxable Income</span><span class="bd-value">${taxableBase.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Tax Rate</span><span class="bd-value">${ratePct}%</span></div><div class="bd-formula">Tax = ${taxableBase.toLocaleString()} × ${ratePct}% = ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+          : `<div class="bd"><div class="bd-title">ពន្ធលើប្រាក់ចំណូល</div><div class="bd-row"><span class="bd-label">ប្រភេទអ្នកជាប់ពន្ធ</span><span class="bd-value">${typeLabel}</span></div><div class="bd-row"><span class="bd-label">ប្រាក់ចំណូលជាប់ពន្ធ</span><span class="bd-value">${taxableBase.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រាពន្ធ</span><span class="bd-value">${ratePct}%</span></div><div class="bd-formula">ពន្ធ = ${taxableBase.toLocaleString()} × ${ratePct}% = ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
+    }
   } else if (category === "withholding") {
     const whtSubcategory = elements.whtSubcategory?.value || "resident";
     const whtType = elements.whtType?.value || "service";
@@ -348,10 +353,11 @@ function calculate() {
     total = result.total;
     const whtSubcategoryLabel = elements.whtSubcategory?.selectedOptions[0]?.text || "";
     const whtTypeLabel = elements.whtType?.selectedOptions[0]?.text || "";
+    const whtRatePct = Math.round(whtRate * 100);
     breakdown =
       currentLanguage === "en"
-        ? `Withholding Tax (WHT): ${whtSubcategoryLabel} - ${whtTypeLabel}`
-        : `ពន្ធកាត់ទុក (WHT): ${whtSubcategoryLabel} - ${whtTypeLabel}`;
+        ? `<div class="bd"><div class="bd-title">Withholding Tax (WHT)</div><div class="bd-row"><span class="bd-label">Subcategory</span><span class="bd-value">${whtSubcategoryLabel}</span></div><div class="bd-row"><span class="bd-label">Type</span><span class="bd-value">${whtTypeLabel}</span></div><div class="bd-row"><span class="bd-label">Taxable Amount</span><span class="bd-value">${taxableBase.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Rate</span><span class="bd-value">${whtRatePct}%</span></div><div class="bd-formula">Tax = ${taxableBase.toLocaleString()} × ${whtRatePct}% = ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+        : `<div class="bd"><div class="bd-title">ពន្ធកាត់ទុក (WHT)</div><div class="bd-row"><span class="bd-label">ប្រភេទរង</span><span class="bd-value">${whtSubcategoryLabel}</span></div><div class="bd-row"><span class="bd-label">ប្រភេទ</span><span class="bd-value">${whtTypeLabel}</span></div><div class="bd-row"><span class="bd-label">ទឹកប្រាក់ជាប់ពន្ធ</span><span class="bd-value">${taxableBase.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រា</span><span class="bd-value">${whtRatePct}%</span></div><div class="bd-formula">ពន្ធ = ${taxableBase.toLocaleString()} × ${whtRatePct}% = ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
   } else if (category === "property") {
     const propertyMode = getPropertyMode();
     const propertyValueRaw = parseFloat(elements.propertyValue.value.replace(/,/g, "")) || 0;
@@ -365,10 +371,11 @@ function calculate() {
       taxAmount = result.taxAmount;
       taxableBase = result.taxableBase;
       total = result.total;
+      const eightyPct = Math.round(propertyValue * 0.8);
       breakdown =
         currentLanguage === "en"
-          ? `Property Tax (Used): ((value × 80%) - 100,000,000) × 0.1%`
-          : `ពន្ធអចលនទ្រព្យប្រើប្រាស់: ០.១% លើតម្លៃលើស 100,000,000 រៀល`;
+          ? `<div class="bd"><div class="bd-title">Property Tax (Used Property)</div><div class="bd-row"><span class="bd-label">Property Value</span><span class="bd-value">${propertyValue.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">80% of Value</span><span class="bd-value">${eightyPct.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Threshold</span><span class="bd-value">100,000,000 KHR</span></div><div class="bd-formula">(Value × 80% − 100,000,000) × 0.1%<br>= (${eightyPct.toLocaleString()} − 100,000,000) × 0.1%<br>= ${taxableBase.toLocaleString()} × 0.1%<br>= ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+          : `<div class="bd"><div class="bd-title">ពន្ធអចលនទ្រព្យប្រើប្រាស់</div><div class="bd-row"><span class="bd-label">តម្លៃអចលនទ្រព្យ</span><span class="bd-value">${propertyValue.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">៨០% នៃតម្លៃ</span><span class="bd-value">${eightyPct.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">កម្រិតកំណត់</span><span class="bd-value">១០០,០០០,០០០ រៀល</span></div><div class="bd-formula">(តម្លៃ × ៨០% − ១០០,០០០,០០០) × ០.១%<br>= (${eightyPct.toLocaleString()} − ១០០,០០០,០០០) × ០.១%<br>= ${taxableBase.toLocaleString()} × ០.១%<br>= ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
     } else {
       const propertySurface = parseFloat(elements.propertySurface.value) || 0;
       const taxableSurface = Math.max(propertySurface - 50000, 0);
@@ -376,10 +383,11 @@ function calculate() {
       taxAmount = tax;
       taxableBase = taxableSurface;
       total = Math.round(propertyValue * propertySurface - tax);
+      const areaValue = Math.round(taxableSurface * propertyValue);
       breakdown =
         currentLanguage === "en"
-          ? `Unused Property Tax: ((surface - 50,000) × value) × 2%`
-          : `ពន្ធដីមិនប្រើប្រាស់: ((ផ្ទៃ - 50,000) × តម្លៃ) × 2%`;
+          ? `<div class="bd"><div class="bd-title">Property Tax (Unused Property)</div><div class="bd-row"><span class="bd-label">Surface Area</span><span class="bd-value">${propertySurface.toLocaleString()} m²</span></div><div class="bd-row"><span class="bd-label">Exempt Area (50,000 m²)</span><span class="bd-value">50,000 m²</span></div><div class="bd-row"><span class="bd-label">Taxable Area</span><span class="bd-value">${taxableSurface.toLocaleString()} m²</span></div><div class="bd-row"><span class="bd-label">Value per m²</span><span class="bd-value">${propertyValue.toLocaleString()} KHR</span></div><div class="bd-formula">(Taxable Area × Value per m²) × 2%<br>= (${taxableSurface.toLocaleString()} × ${propertyValue.toLocaleString()}) × 2%<br>= ${areaValue.toLocaleString()} × 2%<br>= ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+          : `<div class="bd"><div class="bd-title">ពន្ធដីមិនប្រើប្រាស់</div><div class="bd-row"><span class="bd-label">ផ្ទៃដី</span><span class="bd-value">${propertySurface.toLocaleString()} m²</span></div><div class="bd-row"><span class="bd-label">ផ្ទៃលើកលែង (៥០,០០០ m²)</span><span class="bd-value">៥០,០០០ m²</span></div><div class="bd-row"><span class="bd-label">ផ្ទៃជាប់ពន្ធ</span><span class="bd-value">${taxableSurface.toLocaleString()} m²</span></div><div class="bd-row"><span class="bd-label">តម្លៃក្នុងមួយ m²</span><span class="bd-value">${propertyValue.toLocaleString()} រៀល</span></div><div class="bd-formula">(ផ្ទៃជាប់ពន្ធ × តម្លៃក្នុងមួយ m²) × ២%<br>= (${taxableSurface.toLocaleString()} × ${propertyValue.toLocaleString()}) × ២%<br>= ${areaValue.toLocaleString()} × ២%<br>= ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
     }
   } else if (category === "rental") {
     amountRaw = parseFloat(elements.rentalIncome.value.replace(/,/g, "")) || 0;
@@ -392,10 +400,11 @@ function calculate() {
       total = result.total;
       grossAmount = amount;
       totalDeductions = 0;
+      const threshold = 500000;
       breakdown =
         currentLanguage === "en"
-          ? `Tax on Immovable Property Rental (Unregistered Business): Flat rate 10%. Tax = ${amount.toLocaleString()} KHR × 10% = ${taxAmount.toLocaleString()} KHR`
-          : `ពន្ធលើការជួលអចលនទ្រព្យ (អាជីវកម្មមិនបានចុះបញ្ជី): អត្រាថេរ ១០%. ពន្ធ = ${amount.toLocaleString()} រៀល × ១០% = ${taxAmount.toLocaleString()} រៀល`;
+          ? `<div class="bd"><div class="bd-title">Rental Tax (Unregistered)</div><div class="bd-row"><span class="bd-label">Monthly Rental Income</span><span class="bd-value">${amount.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Tax Rate</span><span class="bd-value">10% (if > ${threshold.toLocaleString()} KHR)</span></div>${amount < threshold ? `<div class="bd-row"><span class="bd-label">Status</span><span class="bd-value">Below threshold — no tax</span></div>` : `<div class="bd-formula">Tax = ${amount.toLocaleString()} × 10% = ${taxAmount.toLocaleString()} KHR</div>`}<div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+          : `<div class="bd"><div class="bd-title">ពន្ធជួលអចលនទ្រព្យ (មិនបានចុះបញ្ជី)</div><div class="bd-row"><span class="bd-label">ចំណូលជួលប្រចាំខែ</span><span class="bd-value">${amount.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រាពន្ធ</span><span class="bd-value">១០% (បើ &gt; ${threshold.toLocaleString()} រៀល)</span></div>${amount < threshold ? `<div class="bd-row"><span class="bd-label">ស្ថានភាព</span><span class="bd-value">ក្រោមកម្រិត — គ្មានពន្ធ</span></div>` : `<div class="bd-formula">ពន្ធ = ${amount.toLocaleString()} × ១០% = ${taxAmount.toLocaleString()} រៀល</div>`}<div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
     } else {
       const deductions = getRentalDeductions();
       grossAmount = amount;
@@ -406,8 +415,8 @@ function calculate() {
       total = result.total;
       breakdown =
         currentLanguage === "en"
-          ? `Tax on Immovable Property Rental (Sole Proprietorship): Progressive rates 0%→5%→10%→15%→20%. Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.rentalChildrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.rentalOtherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR`
-          : `ពន្ធលើការជួលអចលនទ្រព្យ (សហគ្រាសឯកបុគ្គល): អត្រារីកចម្រើន ០%→៥%→១០%→១៥%→២០%. ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.rentalChildrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.rentalOtherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល`;
+          ? `<div class="bd"><div class="bd-title">Rental Tax (Sole Proprietorship)</div><div class="bd-row"><span class="bd-label">Gross Rental Income</span><span class="bd-value">${amount.toLocaleString()} KHR</span></div><div class="bd-sub">Deductions</div><div class="bd-row bd-indent"><span class="bd-label">Spouse</span><span class="bd-value">${deductions.spouseDeduction.toLocaleString()} KHR</span></div><div class="bd-row bd-indent"><span class="bd-label">Children (${elements.rentalChildrenCount.value || 0} × 150,000)</span><span class="bd-value">${deductions.childrenDeduction.toLocaleString()} KHR</span></div><div class="bd-row bd-indent"><span class="bd-label">Other Dependents (${elements.rentalOtherDependents.value || 0} × 150,000)</span><span class="bd-value">${deductions.otherDeduction.toLocaleString()} KHR</span></div><div class="bd-row bd-indent"><span class="bd-label">Variety Spending</span><span class="bd-value">${deductions.varietySpending.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Total Deductions</span><span class="bd-value">${deductions.totalDeductions.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Taxable Income</span><span class="bd-value">${taxableBase.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Progressive Rates</span><span class="bd-value">0% → 5% → 10% → 15% → 20%</span></div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+          : `<div class="bd"><div class="bd-title">ពន្ធជួលអចលនទ្រព្យ (សហគ្រាសឯកបុគ្គល)</div><div class="bd-row"><span class="bd-label">ចំណូលជួលសរុប</span><span class="bd-value">${amount.toLocaleString()} រៀល</span></div><div class="bd-sub">ការកាត់បន្ថយ</div><div class="bd-row bd-indent"><span class="bd-label">ស្វាមី/ភរិយា</span><span class="bd-value">${deductions.spouseDeduction.toLocaleString()} រៀល</span></div><div class="bd-row bd-indent"><span class="bd-label">កូន (${elements.rentalChildrenCount.value || 0} × 150,000)</span><span class="bd-value">${deductions.childrenDeduction.toLocaleString()} រៀល</span></div><div class="bd-row bd-indent"><span class="bd-label">អ្នកនៅក្នុងបន្ទុក (${elements.rentalOtherDependents.value || 0} × 150,000)</span><span class="bd-value">${deductions.otherDeduction.toLocaleString()} រៀល</span></div><div class="bd-row bd-indent"><span class="bd-label">ការចំណាយផ្សេងៗ</span><span class="bd-value">${deductions.varietySpending.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">ការកាត់បន្ថយសរុប</span><span class="bd-value">${deductions.totalDeductions.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">ប្រាក់ចំណូលជាប់ពន្ធ</span><span class="bd-value">${taxableBase.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រារីកចម្រើន</span><span class="bd-value">០% → ៥% → ១០% → ១៥% → ២០%</span></div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
     }
   
   } else if (category === "accommodation") {
@@ -415,7 +424,9 @@ function calculate() {
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
     total = result.total;
-    breakdown = currentLanguage === "en" ? "Accommodation Tax: 2% on accommodation services" : "ពន្ធស្នាក់នៅ: ២% លើសេវាកម្មស្នាក់នៅ";
+    breakdown = currentLanguage === "en"
+      ? `<div class="bd"><div class="bd-title">Accommodation Tax</div><div class="bd-row"><span class="bd-label">Room Charges</span><span class="bd-value">${taxableBase.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Tax Rate</span><span class="bd-value">2%</span></div><div class="bd-formula">Tax = ${taxableBase.toLocaleString()} × 2% = ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+      : `<div class="bd"><div class="bd-title">ពន្ធស្នាក់នៅ</div><div class="bd-row"><span class="bd-label">តម្លៃបន្ទប់</span><span class="bd-value">${taxableBase.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រាពន្ធ</span><span class="bd-value">២%</span></div><div class="bd-formula">ពន្ធ = ${taxableBase.toLocaleString()} × ២% = ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
   } else if (category === "import") {
     const dutyRateStr = document.getElementById("dutyRate").value;
     const dutyRate = (parseFloat(dutyRateStr) || 0) / 100;
@@ -423,9 +434,10 @@ function calculate() {
     taxAmount = result.totalTax; // sum of duty and VAT
     taxableBase = amount;
     total = result.grandTotal;
-    breakdown = currentLanguage === "en" 
-        ? `Import Duty (${(dutyRate*100).toFixed(0)}%): ${result.importDuty.toLocaleString()} KHR, VAT (10%): ${result.vat.toLocaleString()} KHR` 
-        : `ពន្ធគយ (${(dutyRate*100).toFixed(0)}%): ${result.importDuty.toLocaleString()} រៀល, អាករលើតម្លៃបន្ថែម (១០%): ${result.vat.toLocaleString()} រៀល`;
+    const vatBase = amount + result.importDuty;
+    breakdown = currentLanguage === "en"
+        ? `<div class="bd"><div class="bd-title">Import Duty & VAT</div><div class="bd-row"><span class="bd-label">Import Value</span><span class="bd-value">${amount.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Duty Rate</span><span class="bd-value">${(dutyRate*100).toFixed(0)}%</span></div><div class="bd-formula">Customs Duty = ${amount.toLocaleString()} × ${(dutyRate*100).toFixed(0)}% = ${result.importDuty.toLocaleString()} KHR</div><div class="bd-row"><span class="bd-label">VAT Base (Value + Duty)</span><span class="bd-value">${vatBase.toLocaleString()} KHR</span></div><div class="bd-formula">VAT = ${vatBase.toLocaleString()} × 10% = ${result.vat.toLocaleString()} KHR</div><div class="bd-formula">Total Tax = ${result.importDuty.toLocaleString()} + ${result.vat.toLocaleString()} = ${result.totalTax.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Total Tax to Pay</span><span class="bd-result">${result.totalTax.toLocaleString()} KHR</span></div></div>`
+        : `<div class="bd"><div class="bd-title">ពន្ធគយ និងអាករ</div><div class="bd-row"><span class="bd-label">តម្លៃនាំចូល</span><span class="bd-value">${amount.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រាពន្ធគយ</span><span class="bd-value">${(dutyRate*100).toFixed(0)}%</span></div><div class="bd-formula">ពន្ធគយ = ${amount.toLocaleString()} × ${(dutyRate*100).toFixed(0)}% = ${result.importDuty.toLocaleString()} រៀល</div><div class="bd-row"><span class="bd-label">មូលដ្ឋានអាករ (តម្លៃ + ពន្ធគយ)</span><span class="bd-value">${vatBase.toLocaleString()} រៀល</span></div><div class="bd-formula">អាករ = ${vatBase.toLocaleString()} × ១០% = ${result.vat.toLocaleString()} រៀល</div><div class="bd-formula">ពន្ធសរុប = ${result.importDuty.toLocaleString()} + ${result.vat.toLocaleString()} = ${result.totalTax.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធសរុបត្រូវបង់</span><span class="bd-result">${result.totalTax.toLocaleString()} រៀល</span></div></div>`;
   } else if (category === "patent") {
     const pType = document.getElementById("patentType").value;
     const result = calculatePatentTax(pType);
@@ -433,13 +445,18 @@ function calculate() {
     taxableBase = result.taxableBase;
     total = result.total;
     grossAmount = 0;
-    breakdown = currentLanguage === "en" ? `Patent Tax for ${pType}` : `ពន្ធប៉ាតង់សម្រាប់ ${pType}`;
+    const pTypeLabel = document.getElementById("patentType")?.selectedOptions[0]?.text || pType;
+    breakdown = currentLanguage === "en"
+      ? `<div class="bd"><div class="bd-title">Patent Tax</div><div class="bd-row"><span class="bd-label">Taxpayer Type</span><span class="bd-value">${pTypeLabel}</span></div><div class="bd-row"><span class="bd-label">Fixed Annual Amount</span><span class="bd-value">${taxAmount.toLocaleString()} KHR</span></div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+      : `<div class="bd"><div class="bd-title">ពន្ធប៉ាតង់</div><div class="bd-row"><span class="bd-label">ប្រភេទអ្នកជាប់ពន្ធ</span><span class="bd-value">${pTypeLabel}</span></div><div class="bd-row"><span class="bd-label">ចំនួនថេរប្រចាំឆ្នាំ</span><span class="bd-value">${taxAmount.toLocaleString()} រៀល</span></div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
   } else if (category === "publicLighting") {
     const result = calculatePublicLightingTax(amount);
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
     total = result.total;
-    breakdown = currentLanguage === "en" ? "Public Lighting Tax: 5% on alcohol and tobacco" : "ពន្ធបំភ្លឺសាធារណៈ: ៥% លើគ្រឿងស្រវឹង និងថ្នាំជក់";
+    breakdown = currentLanguage === "en"
+      ? `<div class="bd"><div class="bd-title">Public Lighting Tax</div><div class="bd-row"><span class="bd-label">Taxable Amount</span><span class="bd-value">${taxableBase.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Tax Rate</span><span class="bd-value">5%</span></div><div class="bd-formula">Tax = ${taxableBase.toLocaleString()} × 5% = ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+      : `<div class="bd"><div class="bd-title">ពន្ធបំភ្លឺសាធារណៈ</div><div class="bd-row"><span class="bd-label">ទឹកប្រាក់ជាប់ពន្ធ</span><span class="bd-value">${taxableBase.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រាពន្ធ</span><span class="bd-value">៥%</span></div><div class="bd-formula">ពន្ធ = ${taxableBase.toLocaleString()} × ៥% = ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
   } else if (category === "specific") {
     amountRaw = parseFloat(document.getElementById("specificAmount").value.replace(/,/g, "")) || 0;
     amount = convertToKhr(amountRaw, getSelectedCurrency("specificCurrency"));
@@ -465,8 +482,8 @@ function calculate() {
     const typeLabels = { wine: "Wine and Liquor (35%)", beer: "Beer (30%)", ciga: "Ciga (25%)", cigaratte: "Cigaratte (20%)", energy: "Energy Drinks (15%)", beverage: "Laverage, Entertainment Service, Air Travel (10%)", cement: "Cement (5%)", telecom: "Telecommunications (3%)" };
     const typeLabel = typeLabels[specType] || "Wine and Liquor (35%)";
     breakdown = currentLanguage === "en"
-      ? `Specific Tax: Amount ${amount.toLocaleString()} KHR × ${statusLabel} × ${typeLabel} = ${taxAmount.toLocaleString()} KHR`
-      : `អាករពិសេស: ទឹកប្រាក់ ${amount.toLocaleString()} រៀល × ${statusLabel} × ${typeLabel} = ${taxAmount.toLocaleString()} រៀល`;
+      ? `<div class="bd"><div class="bd-title">Specific Tax</div><div class="bd-row"><span class="bd-label">Base Amount</span><span class="bd-value">${amount.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Status Rate</span><span class="bd-value">${statusLabel}</span></div><div class="bd-row"><span class="bd-label">Type Rate</span><span class="bd-value">${typeLabel}</span></div><div class="bd-formula">Tax = ${amount.toLocaleString()} × ${Math.round(specRate * 100)}% × ${Math.round(typeRate * 100)}%<br>= ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+      : `<div class="bd"><div class="bd-title">អាករពិសេស</div><div class="bd-row"><span class="bd-label">ទឹកប្រាក់</span><span class="bd-value">${amount.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រាស្ថានភាព</span><span class="bd-value">${statusLabel}</span></div><div class="bd-row"><span class="bd-label">អត្រាប្រភេទ</span><span class="bd-value">${typeLabel}</span></div><div class="bd-formula">ពន្ធ = ${amount.toLocaleString()} × ${Math.round(specRate * 100)}% × ${Math.round(typeRate * 100)}%<br>= ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
   } else if (category === "vehicle") {
     const vType = document.getElementById("vehicleType").value;
     const result = calculateVehicleTax(vType);
@@ -474,7 +491,10 @@ function calculate() {
     taxableBase = result.taxableBase;
     total = result.total;
     grossAmount = 0;
-    breakdown = currentLanguage === "en" ? `Vehicle Tax for ${vType}` : `ពន្ធមធ្យោបាយដឹកជញ្ជូនសម្រាប់ ${vType}`;
+    const vTypeLabel = document.getElementById("vehicleType")?.selectedOptions[0]?.text || vType;
+    breakdown = currentLanguage === "en"
+      ? `<div class="bd"><div class="bd-title">Vehicle Tax</div><div class="bd-row"><span class="bd-label">Vehicle Type</span><span class="bd-value">${vTypeLabel}</span></div><div class="bd-row"><span class="bd-label">Fixed Annual Amount</span><span class="bd-value">${taxAmount.toLocaleString()} KHR</span></div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+      : `<div class="bd"><div class="bd-title">ពន្ធមធ្យោបាយដឹកជញ្ជូន</div><div class="bd-row"><span class="bd-label">ប្រភេទយានយន្ត</span><span class="bd-value">${vTypeLabel}</span></div><div class="bd-row"><span class="bd-label">ចំនួនថេរប្រចាំឆ្នាំ</span><span class="bd-value">${taxAmount.toLocaleString()} រៀល</span></div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
 } else if (category === "transportation") {
     amountRaw =
       parseFloat(elements.transportationExpense.value.replace(/,/g, "")) || 0;
@@ -486,8 +506,8 @@ function calculate() {
     grossAmount = amount;
     breakdown =
       currentLanguage === "en"
-        ? `Transportation Tax: 5% on monthly transportation expenses`
-        : `ពន្ធការដឹក: ៥% លើការចំណាយដឹកជញ្ជូនប្រចាំខែ`;
+        ? `<div class="bd"><div class="bd-title">Transportation Tax</div><div class="bd-row"><span class="bd-label">Monthly Transportation Expense</span><span class="bd-value">${taxableBase.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Tax Rate</span><span class="bd-value">5%</span></div><div class="bd-formula">Tax = ${taxableBase.toLocaleString()} × 5% = ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+        : `<div class="bd"><div class="bd-title">ពន្ធការដឹកជញ្ជូន</div><div class="bd-row"><span class="bd-label">ចំណាយដឹកជញ្ជូនប្រចាំខែ</span><span class="bd-value">${taxableBase.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រាពន្ធ</span><span class="bd-value">៥%</span></div><div class="bd-formula">ពន្ធ = ${taxableBase.toLocaleString()} × ៥% = ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
   }
 
   const taxAmountEl = document.getElementById("taxAmountValue");

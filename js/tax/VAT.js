@@ -59,13 +59,13 @@ export function calculateVATAdvanced(
   const purchaseRate = purchasingCase === "withVat" ? 0.1 : 0;
   const sellRate = sellingCase === "export" ? 0 : 0.1;
 
-  const outputVAT = purchaseRate === 0
+  const inputVAT = purchaseRate === 0
     ? 0
     : purchasingMode === "inclusive"
       ? Math.round(purchase - purchase / (1 + purchaseRate))
       : Math.round(purchase * purchaseRate);
 
-  const inputVAT = sellRate === 0
+  const outputVAT = sellRate === 0
     ? 0
     : sellingMode === "inclusive"
       ? Math.round(sell - sell / (1 + sellRate))
