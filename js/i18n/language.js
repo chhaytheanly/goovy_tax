@@ -65,7 +65,26 @@ export function updateLanguage(currentLanguage, elements) {
     t.lblChildrenDeduction;
   document.getElementById("lblOtherDeduction").innerText = t.lblOtherDeduction;
   document.getElementById("lblTotalDeduction").innerText = t.lblTotalDeduction;
+  document.getElementById("rentalPropertyTitle").innerHTML = `<i class="fa-solid fa-house-chimney"></i> ${t.rentalPropertyTitle}`;
   document.getElementById("lblRentalIncome").innerText = t.lblRentalIncome;
+  document.getElementById("lblRentalType").innerText = t.lblRentalType;
+  document.getElementById("optRentalUnregistered").innerText = t.optRentalUnregistered;
+  document.getElementById("optRentalSoleProprietorship").innerText = t.optRentalSoleProprietorship;
+  document.getElementById("lblRentalTaxRate").innerHTML = `<i class="fa-solid fa-percent"></i> ${t.lblRentalTaxRate}`;
+  document.getElementById("rentalTaxRateHint").innerText = t.rentalTaxRateHint;
+  document.getElementById("lblRentalVarietySpending").innerHTML = `<i class="fa-solid fa-receipt"></i> ${t.lblRentalVarietySpending}`;
+  document.getElementById("lblRentalVarietyDeduction").innerText = t.lblRentalVarietyDeduction;
+  document.getElementById("lblRentalSpouseStatus").innerHTML = `<i class="fa-solid fa-heart"></i> ${t.lblRentalSpouseStatus}`;
+  document.getElementById("optRentalNoSpouse").innerText = t.optRentalNoSpouse;
+  document.getElementById("optRentalHousewife").innerText = t.optRentalHousewife;
+  document.getElementById("lblRentalChildren").innerHTML = `<i class="fa-solid fa-child"></i> ${t.lblRentalChildren}`;
+  document.getElementById("rentalChildrenHint").innerText = t.rentalChildrenHint;
+  document.getElementById("lblRentalOtherDependents").innerHTML = `<i class="fa-solid fa-hand-holding-heart"></i> ${t.lblRentalOtherDependents}`;
+  document.getElementById("rentalOtherHint").innerText = t.rentalOtherHint;
+  document.getElementById("lblRentalSpouseDeduction").innerText = t.lblRentalSpouseDeduction;
+  document.getElementById("lblRentalChildrenDeduction").innerText = t.lblRentalChildrenDeduction;
+  document.getElementById("lblRentalOtherDeduction").innerText = t.lblRentalOtherDeduction;
+  document.getElementById("lblRentalTotalDeduction").innerHTML = `<i class="fa-solid fa-coins"></i> ${t.lblRentalTotalDeduction}`;
   document.getElementById("rentalHint").innerText = t.rentalHint;
   document.getElementById("lblTransportationExpense").innerText =
     t.lblTransportationExpense;

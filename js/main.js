@@ -13,7 +13,9 @@ import {
   calculateWHT,
   getWHTRate,
   calculatePropertyTax,
-  calculateRentalIncomeTax,
+  calculateUnregisteredRentalTax,
+  calculateRentalPropertyDeductions,
+  calculateSoleProprietorshipRentalTax,
   calculateTransportationTax,
 } from "./tax/other.js";
 import { calculateIncomeTax } from "./tax/incomeTax.js";
@@ -73,7 +75,10 @@ function updateCategoryVisibility() {
   if (whtTypeGroup) whtTypeGroup.style.display = isWht ? "block" : "none";
   elements.vatFormGroup.style.display = isVat ? "block" : "none";
   elements.salaryDeductionsSection.style.display = isSalary ? "block" : "none";
-  elements.rentalIncomeGroup.style.display = isRental ? "block" : "none";
+  elements.rentalPropertySection.style.display = isRental ? "block" : "none";
+  if (isRental) {
+    updateRentalVisibility();
+  }
   elements.transportationExpenseGroup.style.display = isTransportation ? "block" : "none";
 
   const dutyRateGroup = document.getElementById("dutyRateGroup");
@@ -143,6 +148,49 @@ function updateWhtTypeOptions() {
 function getPropertyMode() {
   const selected = document.querySelector('input[name="propertyMode"]:checked');
   return selected ? selected.value : "used";
+}
+
+function getRentalBusinessType() {
+  const selected = document.querySelector('input[name="rentalBusinessType"]:checked');
+  return selected ? selected.value : "unregistered";
+}
+
+function updateRentalVisibility() {
+  const type = getRentalBusinessType();
+  const isUnregistered = type === "unregistered";
+  document.getElementById("rentalTaxRateGroup").style.display = isUnregistered ? "block" : "none";
+  document.getElementById("rentalSoleProprietorshipSection").style.display = isUnregistered ? "none" : "block";
+  if (!isUnregistered) {
+    updateRentalDeductionSummary();
+  }
+}
+
+function updateRentalDeductionSummary() {
+  const deductions = getRentalDeductions();
+  document.getElementById("rentalVarietyDeductionValue").innerHTML =
+    `${deductions.varietySpending.toLocaleString()} KHR`;
+  document.getElementById("rentalSpouseDeductionValue").innerHTML =
+    `${deductions.spouseDeduction.toLocaleString()} KHR`;
+  document.getElementById("rentalChildrenDeductionValue").innerHTML =
+    `${deductions.childrenDeduction.toLocaleString()} KHR`;
+  document.getElementById("rentalOtherDeductionValue").innerHTML =
+    `${deductions.otherDeduction.toLocaleString()} KHR`;
+  document.getElementById("rentalTotalDeductionValue").innerHTML =
+    `${deductions.totalDeductions.toLocaleString()} KHR`;
+}
+
+function getRentalDeductions() {
+  const spouseStatus = elements.rentalSpouseStatus.value;
+  const childrenCount = parseInt(elements.rentalChildrenCount.value, 10) || 0;
+  const otherDependents = parseInt(elements.rentalOtherDependents.value, 10) || 0;
+  const varietySpendingRaw = parseFloat(elements.rentalVarietySpending.value.replace(/,/g, "")) || 0;
+  const varietySpending = convertToKhr(varietySpendingRaw, getSelectedCurrency("rentalVarietyCurrency"));
+  return calculateRentalPropertyDeductions({
+    spouseStatus,
+    childrenCount,
+    otherDependents,
+    varietySpending,
+  });
 }
 
 function updateDeductionSummary() {
@@ -336,16 +384,31 @@ function calculate() {
   } else if (category === "rental") {
     amountRaw = parseFloat(elements.rentalIncome.value.replace(/,/g, "")) || 0;
     amount = convertToKhr(amountRaw, getSelectedCurrency("rentalCurrency"));
-    const result = calculateRentalIncomeTax(amount);
-    taxAmount = result.taxAmount;
-    taxableBase = result.taxableBase;
-    total = result.total;
-    grossAmount = amount;
-    totalDeductions = result.deduction;
-    breakdown =
-      currentLanguage === "en"
-        ? `Rental Income Tax (Official: Prakas No. 576, Sept 2024): Progressive tax on property income. Business deduction (20%): ${result.deduction.toLocaleString()} KHR. Taxable income subject to progressive brackets: 0%→5%→10%→15%→20%`
-        : `ពន្ធលើប្រាក់ឈ្នួល (ផ្លូវការ: Prakas No. 576, កញ្ញា 2024): ពន្ធរីកចម្រើននៅលើប្រាក់ចំណូលលើទ្រព្យ។ ការកាត់បន្ថយប្រព័ន្ធពាណិជ្ជកម្ម (20%): ${result.deduction.toLocaleString()} រៀល។ ប្រាក់ចំណូលដែលត្រូវបង់ពន្ធក្ខណ្ឌល: ០%→៥%→១០%→១៥%→២០%`;
+    const businessType = getRentalBusinessType();
+    if (businessType === "unregistered") {
+      const result = calculateUnregisteredRentalTax(amount);
+      taxAmount = result.taxAmount;
+      taxableBase = result.taxableBase;
+      total = result.total;
+      grossAmount = amount;
+      totalDeductions = 0;
+      breakdown =
+        currentLanguage === "en"
+          ? `Tax on Immovable Property Rental (Unregistered Business): Flat rate 10%. Tax = ${amount.toLocaleString()} KHR × 10% = ${taxAmount.toLocaleString()} KHR`
+          : `ពន្ធលើការជួលអចលនទ្រព្យ (អាជីវកម្មមិនបានចុះបញ្ជី): អត្រាថេរ ១០%. ពន្ធ = ${amount.toLocaleString()} រៀល × ១០% = ${taxAmount.toLocaleString()} រៀល`;
+    } else {
+      const deductions = getRentalDeductions();
+      grossAmount = amount;
+      totalDeductions = deductions.totalDeductions;
+      const result = calculateSoleProprietorshipRentalTax(amount, deductions);
+      taxAmount = result.taxAmount;
+      taxableBase = result.taxableBase;
+      total = result.total;
+      breakdown =
+        currentLanguage === "en"
+          ? `Tax on Immovable Property Rental (Sole Proprietorship): Progressive rates 0%→5%→10%→15%→20%. Spouse Deduction: ${deductions.spouseDeduction.toLocaleString()} KHR, Children (${elements.rentalChildrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} KHR, Other Dependents (${elements.rentalOtherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} KHR`
+          : `ពន្ធលើការជួលអចលនទ្រព្យ (សហគ្រាសឯកបុគ្គល): អត្រារីកចម្រើន ០%→៥%→១០%→១៥%→២០%. ការកាត់បន្ថយស្វាមី/ភរិយា: ${deductions.spouseDeduction.toLocaleString()} រៀល, កូន (${elements.rentalChildrenCount.value || 0}): ${deductions.childrenDeduction.toLocaleString()} រៀល, អ្នកនៅក្នុងបន្ទុក (${elements.rentalOtherDependents.value || 0}): ${deductions.otherDeduction.toLocaleString()} រៀល`;
+    }
   
   } else if (category === "accommodation") {
     const result = calculateAccommodationTax(amount);
@@ -500,6 +563,34 @@ elements.otherDependents.addEventListener("input", () => {
 
 elements.rentalIncome.addEventListener("input", (e) => {
   formatCurrencyInput(e);
+  calculate();
+});
+
+document.querySelectorAll('input[name="rentalBusinessType"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+    updateRentalVisibility();
+    calculate();
+  });
+});
+
+elements.rentalSpouseStatus.addEventListener("change", () => {
+  updateRentalDeductionSummary();
+  calculate();
+});
+
+elements.rentalChildrenCount.addEventListener("input", () => {
+  updateRentalDeductionSummary();
+  calculate();
+});
+
+elements.rentalOtherDependents.addEventListener("input", () => {
+  updateRentalDeductionSummary();
+  calculate();
+});
+
+elements.rentalVarietySpending.addEventListener("input", (e) => {
+  formatCurrencyInput(e);
+  updateRentalDeductionSummary();
   calculate();
 });
 

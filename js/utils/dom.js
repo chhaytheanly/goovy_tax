@@ -21,8 +21,12 @@ export function getElements() {
     spouseStatus: document.getElementById("spouseStatus"),
     childrenCount: document.getElementById("childrenCount"),
     otherDependents: document.getElementById("otherDependents"),
-    rentalIncomeGroup: document.getElementById("rentalIncomeGroup"),
+    rentalPropertySection: document.getElementById("rentalPropertySection"),
     rentalIncome: document.getElementById("rentalIncome"),
+    rentalSpouseStatus: document.getElementById("rentalSpouseStatus"),
+    rentalChildrenCount: document.getElementById("rentalChildrenCount"),
+    rentalOtherDependents: document.getElementById("rentalOtherDependents"),
+    rentalVarietySpending: document.getElementById("rentalVarietySpending"),
     transportationExpenseGroup: document.getElementById(
       "transportationExpenseGroup",
     ),
@@ -63,6 +67,6 @@ export function getVatType() {
 
 export function getCurrencyRadios() {
   return document.querySelectorAll(
-    'input[name="baseCurrency"], input[name="salaryCurrency"], input[name="fringeCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"], input[name="propertyCurrency"], input[name="purchasingCurrency"], input[name="sellingCurrency"], input[name="specificCurrency"]',
+    'input[name="baseCurrency"], input[name="salaryCurrency"], input[name="fringeCurrency"], input[name="rentalCurrency"], input[name="rentalVarietyCurrency"], input[name="transportCurrency"], input[name="propertyCurrency"], input[name="purchasingCurrency"], input[name="sellingCurrency"], input[name="specificCurrency"]',
   );
 }

@@ -94,7 +94,7 @@
               Property Tax
             </option>
             <option value="rental">
-              Rental Income Tax
+              Tax on Immovable Property Rental
             </option>
             <option value="transportation">
               Transportation Tax
@@ -355,24 +355,113 @@
           </div>
         </div>
 
-        <div class="form-group" id="rentalIncomeGroup" style="display: none">
-          <label id="lblRentalIncome"><i class="fa-solid fa-house"></i> Monthly Rental Income (KHR)</label>
-          <input type="text" id="rentalIncome" class="form-input" placeholder="Enter monthly rental income" value="0" />
-          <div class="currency-group">
-            <label class="currency-label" id="lblRentalCurrency">Currency</label>
-            <div class="radio-group currency-toggle">
+        <div class="deductions-section" id="rentalPropertySection" style="display: none">
+          <div class="section-title" id="rentalPropertyTitle">
+            <i class="fa-solid fa-house-chimney"></i> Property Rental Tax Details
+          </div>
+          <small id="rentalHint" class="hint-text" style="margin-bottom:1rem;display:block">Tax on immovable property rental income</small>
+
+          <div class="form-group">
+            <label id="lblRentalIncome"><i class="fa-solid fa-sack-dollar"></i> Monthly Rental Income</label>
+            <input type="text" id="rentalIncome" class="form-input" placeholder="Enter monthly rental income" value="5,000,000" />
+            <div class="currency-group">
+              <label class="currency-label" id="lblRentalCurrency">Currency</label>
+              <div class="radio-group currency-toggle">
+                <label class="radio-label">
+                  <input type="radio" name="rentalCurrency" value="khr" checked />
+                  <span class="currency-khr" id="optRentalKHR">KHR</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="rentalCurrency" value="usd" />
+                  <span class="currency-usd" id="optRentalUSD">USD</span>
+                </label>
+              </div>
+              <small class="hint-text currency-hint" id="rentalCurrencyHint">*USD will be converted at 4,100 KHR</small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label id="lblRentalType"><i class="fa-solid fa-building"></i> Type</label>
+            <div class="radio-group">
               <label class="radio-label">
-                <input type="radio" name="rentalCurrency" value="khr" checked />
-                <span class="currency-khr" id="optRentalKHR">KHR</span>
+                <input type="radio" name="rentalBusinessType" value="unregistered" checked />
+                <span id="optRentalUnregistered">Unregistered Business</span>
               </label>
               <label class="radio-label">
-                <input type="radio" name="rentalCurrency" value="usd" />
-                <span class="currency-usd" id="optRentalUSD">USD</span>
+                <input type="radio" name="rentalBusinessType" value="soleProprietorship" />
+                <span id="optRentalSoleProprietorship">Sole Proprietorship (Register)</span>
               </label>
             </div>
-            <small class="hint-text currency-hint" id="rentalCurrencyHint">*USD will be converted at 4,100 KHR</small>
           </div>
-          <small id="rentalHint" class="hint-text">*Rental income is taxed at a flat rate</small>
+
+          <div class="form-group" id="rentalTaxRateGroup">
+            <label id="lblRentalTaxRate"><i class="fa-solid fa-percent"></i> Tax Rate 10%</label>
+            <small class="hint-text" id="rentalTaxRateHint">*Tax = Monthly Rental Income × 10%</small>
+          </div>
+
+          <div id="rentalSoleProprietorshipSection" style="display: none">
+            <div class="form-group">
+              <label id="lblRentalVarietySpending"><i class="fa-solid fa-receipt"></i> Variety Spending (Staff costs, electricity, fix costs...)</label>
+              <input type="text" id="rentalVarietySpending" class="form-input" placeholder="Enter variety spending amount" value="0" />
+              <div class="currency-group">
+                <label class="currency-label" id="lblRentalVarietyCurrency">Currency</label>
+                <div class="radio-group currency-toggle">
+                  <label class="radio-label">
+                    <input type="radio" name="rentalVarietyCurrency" value="khr" checked />
+                    <span class="currency-khr" id="optRentalVarietyKHR">KHR</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="rentalVarietyCurrency" value="usd" />
+                    <span class="currency-usd" id="optRentalVarietyUSD">USD</span>
+                  </label>
+                </div>
+                <small class="hint-text currency-hint" id="rentalVarietyCurrencyHint">*USD will be converted at 4,100 KHR</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label id="lblRentalSpouseStatus"><i class="fa-solid fa-heart"></i> Spouse Status</label>
+              <select id="rentalSpouseStatus" class="form-select">
+                <option value="none" id="optRentalNoSpouse">No Spouse / Spouse Working</option>
+                <option value="housewife" id="optRentalHousewife">Spouse is Housewife/Husband (Non-working)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label id="lblRentalChildren"><i class="fa-solid fa-child"></i> Number of Dependent Children</label>
+              <input type="number" id="rentalChildrenCount" class="form-input" min="0" max="20" value="0" />
+              <small id="rentalChildrenHint" class="hint-text">*Each child gives 150,000 KHR deduction per month</small>
+            </div>
+
+            <div class="form-group">
+              <label id="lblRentalOtherDependents"><i class="fa-solid fa-hand-holding-heart"></i> Other Dependents</label>
+              <input type="number" id="rentalOtherDependents" class="form-input" min="0" max="10" value="0" />
+              <small id="rentalOtherHint" class="hint-text">*Each dependent gives 150,000 KHR deduction per month (under 25 years old)</small>
+            </div>
+
+            <div class="deduction-summary" id="rentalDeductionSummary">
+              <div class="summary-item">
+                <span id="lblRentalVarietyDeduction">Variety Spending:</span>
+                <span id="rentalVarietyDeductionValue">0 KHR</span>
+              </div>
+              <div class="summary-item">
+                <span id="lblRentalSpouseDeduction">Spouse Deduction:</span>
+                <span id="rentalSpouseDeductionValue">0 KHR</span>
+              </div>
+              <div class="summary-item">
+                <span id="lblRentalChildrenDeduction">Children Deduction:</span>
+                <span id="rentalChildrenDeductionValue">0 KHR</span>
+              </div>
+              <div class="summary-item">
+                <span id="lblRentalOtherDeduction">Other Dependents:</span>
+                <span id="rentalOtherDeductionValue">0 KHR</span>
+              </div>
+              <div class="summary-item total-deduction">
+                <span id="lblRentalTotalDeduction"><i class="fa-solid fa-coins"></i> Total Deductions:</span>
+                <span id="rentalTotalDeductionValue">0 KHR</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="form-group" id="transportationExpenseGroup" style="display: none">

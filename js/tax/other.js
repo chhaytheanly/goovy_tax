@@ -3,7 +3,7 @@ import {
   PROPERTY_THRESHOLD,
   PROPERTY_RATE,
   TRANSPORTATION_TAX_RATE,
-  RENTAL_BUSINESS_DEDUCTION_RATE,
+  DEPENDENT_DEDUCTION,
 } from "../config/constants.js";
 
 export function getWHTRate(subcategory, type) {
@@ -32,12 +32,41 @@ export function calculatePropertyTax(value) {
   };
 }
 
-export function calculateRentalIncomeTax(amount) {
-  const operatingExpenseDeduction = amount * RENTAL_BUSINESS_DEDUCTION_RATE;
-  const taxableRentalIncome = Math.max(0, amount - operatingExpenseDeduction);
+export function calculateUnregisteredRentalTax(amount) {
+  const tax = Math.round(amount * 0.1);
+  return {
+    taxAmount: tax,
+    taxableBase: amount,
+    total: Math.round(amount - tax),
+    deduction: 0,
+  };
+}
+
+export function calculateRentalPropertyDeductions({
+  spouseStatus,
+  childrenCount,
+  otherDependents,
+  varietySpending = 0,
+}) {
+  let spouseDeduction = spouseStatus === "housewife" ? DEPENDENT_DEDUCTION : 0;
+  let childrenDeduction = childrenCount * DEPENDENT_DEDUCTION;
+  let otherDeduction = otherDependents * DEPENDENT_DEDUCTION;
+  let totalDeductions = spouseDeduction + childrenDeduction + otherDeduction + varietySpending;
+
+  return {
+    spouseDeduction,
+    childrenDeduction,
+    otherDeduction,
+    varietySpending,
+    totalDeductions,
+  };
+}
+
+export function calculateSoleProprietorshipRentalTax(amount, deductions) {
+  const taxableIncome = Math.max(0, amount - deductions.totalDeductions);
 
   let tax = 0;
-  let remaining = taxableRentalIncome;
+  let remaining = taxableIncome;
 
   if (remaining > 1500000) {
     let tier1 = Math.min(remaining, 2000000) - 1500000;
@@ -58,9 +87,9 @@ export function calculateRentalIncomeTax(amount) {
 
   return {
     taxAmount: Math.round(tax),
-    taxableBase: Math.round(taxableRentalIncome),
+    taxableBase: Math.round(taxableIncome),
     total: Math.round(amount - tax),
-    deduction: Math.round(operatingExpenseDeduction),
+    totalDeductions: deductions.totalDeductions,
   };
 }
 
