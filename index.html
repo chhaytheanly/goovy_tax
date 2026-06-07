@@ -140,35 +140,111 @@
           </select>
         </div>
 
-        <div class="form-group" id="vatModeGroup" style="display: none">
-          <label id="lblVatMode"><i class="fa-solid fa-sliders"></i> VAT Calculation Mode</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" name="vatMode" value="exclusive" checked />
-              <span id="optExclusive">Exclusive(Without VAT)</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="vatMode" value="inclusive" />
-              <span id="optInclusive">Inclusive(With VAT)</span>
-            </label>
+        <div class="form-group" id="vatFormGroup" style="display: none">
+          <div class="section-title" id="vatFormTitle">
+            <i class="fa-solid fa-money-bill-transfer"></i> VAT Details
           </div>
-        </div>
 
-        <div class="form-group" id="vatTypeGroup" style="display: none">
-          <label id="lblVatType"><i class="fa-solid fa-truck-arrow-right"></i> VAT Case</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" name="vatType" value="domestic" checked />
-              <span id="optVatDomestic">Domestic sale 10%</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="vatType" value="import" />
-              <span id="optVatImport">Import 10%</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="vatType" value="export" />
-              <span id="optVatExport">Export 0%</span>
-            </label>
+          <div class="form-group" id="purchasingAmountGroup">
+            <label id="lblPurchasingAmount"><i class="fa-solid fa-cart-shopping"></i> Purchasing Amount</label>
+            <input type="text" id="purchasingAmount" class="form-input" placeholder="Enter purchasing amount" value="0" />
+            <div class="currency-group">
+              <label class="currency-label" id="lblPurchasingCurrency">Currency</label>
+              <div class="radio-group currency-toggle">
+                <label class="radio-label">
+                  <input type="radio" name="purchasingCurrency" value="khr" checked />
+                  <span class="currency-khr" id="optPurchasingKHR">KHR</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="purchasingCurrency" value="usd" />
+                  <span class="currency-usd" id="optPurchasingUSD">USD</span>
+                </label>
+              </div>
+              <small class="hint-text currency-hint" id="purchasingCurrencyHint">*USD will be converted at 4,100 KHR</small>
+            </div>
+          </div>
+
+          <div class="form-group" id="purchasingVatModeGroup">
+            <label id="lblPurchasingVatMode"><i class="fa-solid fa-sliders"></i> Input VAT Calculation Mode</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="purchasingVatMode" value="exclusive" checked />
+                <span id="optPurchasingExclusive">Exclusive(Without VAT)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="purchasingVatMode" value="inclusive" />
+                <span id="optPurchasingInclusive">Inclusive(With VAT)</span>
+              </label>
+            </div>
+            <small class="hint-text" id="purchasingModeHint">If Exclusive, Output VAT = Purchasing Amount * VAT. If Inclusive, Output VAT = Purchasing Amount - (Purchasing Amount * 1/(1 + VAT)).</small>
+          </div>
+
+          <div class="form-group" id="purchasingVatCaseGroup">
+            <label id="lblPurchasingVatCase"><i class="fa-solid fa-truck-arrow-right"></i> Purchasing VAT Case</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="purchasingVatCase" value="withVat" checked />
+                <span id="optPurchasingWithVat">Supply with VAT</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="purchasingVatCase" value="withoutVat" />
+                <span id="optPurchasingWithoutVat">Supply without VAT</span>
+              </label>
+            </div>
+            <small class="hint-text" id="purchasingCaseHint">The supply you have purchased is VAT free or not.</small>
+          </div>
+
+          <div class="form-group" id="sellingAmountGroup">
+            <label id="lblSellingAmount"><i class="fa-solid fa-tag"></i> Selling Amount</label>
+            <input type="text" id="sellingAmount" class="form-input" placeholder="Enter selling amount" value="0" />
+            <div class="currency-group">
+              <label class="currency-label" id="lblSellingCurrency">Currency</label>
+              <div class="radio-group currency-toggle">
+                <label class="radio-label">
+                  <input type="radio" name="sellingCurrency" value="khr" checked />
+                  <span class="currency-khr" id="optSellingKHR">KHR</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="sellingCurrency" value="usd" />
+                  <span class="currency-usd" id="optSellingUSD">USD</span>
+                </label>
+              </div>
+              <small class="hint-text currency-hint" id="sellingCurrencyHint">*USD will be converted at 4,100 KHR</small>
+            </div>
+          </div>
+
+          <div class="form-group" id="outputVatModeGroup">
+            <label id="lblOutputVatMode"><i class="fa-solid fa-sliders"></i> Output VAT Calculation Mode</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="outputVatMode" value="exclusive" checked />
+                <span id="optOutputExclusive">Exclusive(Without VAT)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="outputVatMode" value="inclusive" />
+                <span id="optOutputInclusive">Inclusive(With VAT)</span>
+              </label>
+            </div>
+            <small class="hint-text" id="outputModeHint">If Exclusive, Input VAT = Selling Amount * VAT. If Inclusive, Input VAT = Selling Amount - (Selling Amount * 1/(1 + VAT)).</small>
+          </div>
+
+          <div class="form-group" id="sellingVatCaseGroup">
+            <label id="lblSellingVatCase"><i class="fa-solid fa-truck-arrow-right"></i> Selling VAT Case</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="sellingVatCase" value="domestic" checked />
+                <span id="optSellingDomestic">Domestic sale 10%</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="sellingVatCase" value="import" />
+                <span id="optSellingImport">Import 10%</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="sellingVatCase" value="export" />
+                <span id="optSellingExport">Export 0%</span>
+              </label>
+            </div>
+            <small class="hint-text" id="sellingCaseHint">The supply you have sold falls under domestic, import, or export VAT case.</small>
           </div>
         </div>
 
@@ -414,7 +490,7 @@
     </div>
   </div>
 
-  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js?v=2"></script>
 </body>
 
 </html>

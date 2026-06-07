@@ -6,8 +6,15 @@ export function getElements() {
     incomeTaxType: document.getElementById("incomeTaxType"),
     whtSubcategory: document.getElementById("whtSubcategory"),
     whtType: document.getElementById("whtType"),
-    vatModeGroup: document.getElementById("vatModeGroup"),
-    vatTypeGroup: document.getElementById("vatTypeGroup"),
+    vatFormGroup: document.getElementById("vatFormGroup"),
+    purchasingAmount: document.getElementById("purchasingAmount"),
+    purchasingAmountGroup: document.getElementById("purchasingAmountGroup"),
+    purchasingVatModeGroup: document.getElementById("purchasingVatModeGroup"),
+    purchasingVatCaseGroup: document.getElementById("purchasingVatCaseGroup"),
+    sellingAmount: document.getElementById("sellingAmount"),
+    sellingAmountGroup: document.getElementById("sellingAmountGroup"),
+    outputVatModeGroup: document.getElementById("outputVatModeGroup"),
+    sellingVatCaseGroup: document.getElementById("sellingVatCaseGroup"),
     salaryDeductionsSection: document.getElementById("salaryDeductionsSection"),
     monthlySalary: document.getElementById("monthlySalary"),
     fringeBenefit: document.getElementById("fringeBenefit"),
@@ -29,9 +36,24 @@ export function getElements() {
   };
 }
 
-export function getVatMode() {
-  const selected = document.querySelector('input[name="vatMode"]:checked');
+export function getPurchasingVatMode() {
+  const selected = document.querySelector('input[name="purchasingVatMode"]:checked');
   return selected ? selected.value : "exclusive";
+}
+
+export function getPurchasingVatCase() {
+  const selected = document.querySelector('input[name="purchasingVatCase"]:checked');
+  return selected ? selected.value : "withVat";
+}
+
+export function getOutputVatMode() {
+  const selected = document.querySelector('input[name="outputVatMode"]:checked');
+  return selected ? selected.value : "exclusive";
+}
+
+export function getSellingVatCase() {
+  const selected = document.querySelector('input[name="sellingVatCase"]:checked');
+  return selected ? selected.value : "withVat";
 }
 
 export function getVatType() {
@@ -41,10 +63,6 @@ export function getVatType() {
 
 export function getCurrencyRadios() {
   return document.querySelectorAll(
-    'input[name="baseCurrency"], input[name="salaryCurrency"], input[name="fringeCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"], input[name="propertyCurrency"]',
+    'input[name="baseCurrency"], input[name="salaryCurrency"], input[name="fringeCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"], input[name="propertyCurrency"], input[name="purchasingCurrency"], input[name="sellingCurrency"]',
   );
-}
-
-export function getVatModeRadios() {
-  return document.querySelectorAll('input[name="vatMode"]');
 }

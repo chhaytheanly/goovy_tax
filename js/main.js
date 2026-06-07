@@ -2,10 +2,11 @@ import { convertToKhr, getSelectedCurrency } from "./utils/currency.js";
 import { formatCurrencyInput } from "./utils/formatter.js";
 import {
   getElements,
-  getVatMode,
-  getVatType,
+  getPurchasingVatMode,
+  getPurchasingVatCase,
+  getOutputVatMode,
+  getSellingVatCase,
   getCurrencyRadios,
-  getVatModeRadios,
 } from "./utils/dom.js";
 import { calculateSalaryDeductions, calculateSalaryTax } from "./tax/salary.js";
 import {
@@ -16,8 +17,8 @@ import {
   calculateTransportationTax,
 } from "./tax/other.js";
 import { calculateIncomeTax } from "./tax/incomeTax.js";
-import { calculateVAT } from "./tax/VAT.js";
-import { updateLanguage } from "./i18n/language.js";
+import { calculateVATAdvanced } from "./tax/VAT.js";
+import { updateLanguage } from "./i18n/language.js?v=2";
 import { setTranslations } from "./i18n/translations.js";
 import { calculateAccommodationTax } from "./tax/accommodationTax.js";
 import { calculateImportDuty } from "./tax/importDuty.js";
@@ -63,15 +64,14 @@ function updateCategoryVisibility() {
   const isProperty = category === "property";
 
   elements.baseAmountGroup.style.display =
-    (isSalary || isRental || isTransportation || isPatent || isVehicle || isProperty) ? "none" : "block";
+    (isSalary || isRental || isTransportation || isPatent || isVehicle || isProperty || isVat) ? "none" : "block";
   const incomeTaxTypeGroup = document.getElementById("incomeTaxTypeGroup");
   if (incomeTaxTypeGroup) incomeTaxTypeGroup.style.display = isIncomeTax ? "block" : "none";
   const whtSubcategoryGroup = document.getElementById("whtSubcategoryGroup");
   if (whtSubcategoryGroup) whtSubcategoryGroup.style.display = isWht ? "block" : "none";
   const whtTypeGroup = document.getElementById("whtTypeGroup");
   if (whtTypeGroup) whtTypeGroup.style.display = isWht ? "block" : "none";
-  elements.vatModeGroup.style.display = isVat ? "block" : "none";
-  if (elements.vatTypeGroup) elements.vatTypeGroup.style.display = isVat ? "block" : "none";
+  elements.vatFormGroup.style.display = isVat ? "block" : "none";
   elements.salaryDeductionsSection.style.display = isSalary ? "block" : "none";
   elements.rentalIncomeGroup.style.display = isRental ? "block" : "none";
   elements.transportationExpenseGroup.style.display = isTransportation ? "block" : "none";
@@ -202,22 +202,56 @@ function calculate() {
   let totalDeductions = 0;
 
   if (category === "vat") {
-    const vatMode = getVatMode();
-    const vatType = getVatType();
-    const result = calculateVAT(amount, vatMode, vatType);
-    taxAmount = result.taxAmount;
-    taxableBase = result.taxableBase;
-    total = result.total;
-    const vatCaseLabel =
-      vatType === "import"
-        ? "import VAT at 10%"
-        : vatType === "export"
-          ? "export VAT at 0%"
-          : "standard VAT at 10%";
+    const purchasingAmountRaw = parseFloat(elements.purchasingAmount.value.replace(/,/g, "")) || 0;
+    const purchasingAmount = convertToKhr(
+      purchasingAmountRaw,
+      getSelectedCurrency("purchasingCurrency"),
+    );
+    const purchasingVatMode = getPurchasingVatMode();
+    const purchasingVatCase = getPurchasingVatCase();
+    const sellingAmountRaw = parseFloat(elements.sellingAmount.value.replace(/,/g, "")) || 0;
+    const sellingAmount = convertToKhr(
+      sellingAmountRaw,
+      getSelectedCurrency("sellingCurrency"),
+    );
+    const outputVatMode = getOutputVatMode();
+    const sellingVatCase = getSellingVatCase();
+
+    const result = calculateVATAdvanced(
+      purchasingAmount,
+      purchasingVatMode,
+      purchasingVatCase,
+      sellingAmount,
+      outputVatMode,
+      sellingVatCase,
+    );
+
+    taxAmount = result.tax;
+    taxableBase = purchasingAmount;
+    total = purchasingAmount + sellingAmount;
+    const purchasingCaseLabel =
+      purchasingVatCase === "withVat"
+        ? "Supply with VAT (10%)"
+        : "Supply without VAT (0%)";
+    const sellingCaseLabel =
+      sellingVatCase === "domestic"
+        ? "Domestic sale 10%"
+        : sellingVatCase === "import"
+          ? "Import 10%"
+          : "Export 0%";
+    const purchasingModeLabel =
+      purchasingVatMode === "exclusive"
+        ? "Exclusive(Without VAT)"
+        : "Inclusive(With VAT)";
+    const outputModeLabel =
+      outputVatMode === "exclusive"
+        ? "Exclusive(Without VAT)"
+        : "Inclusive(With VAT)";
+
     breakdown =
       currentLanguage === "en"
-        ? `VAT calculated using ${vatCaseLabel} (${vatMode === "exclusive" ? "added to base" : "included in amount"})`
-        : `VAT calculated using ${vatCaseLabel} (${vatMode === "exclusive" ? "added to base" : "included in amount"})`;
+        ? `Output VAT: ${result.outputVAT.toLocaleString()} KHR (${purchasingModeLabel}, ${purchasingCaseLabel}); Input VAT: ${result.inputVAT.toLocaleString()} KHR (${outputModeLabel}, ${sellingCaseLabel}); Tax = Output VAT - Input VAT`
+        : `Output VAT: ${result.outputVAT.toLocaleString()} KHR (${purchasingModeLabel}, ${purchasingCaseLabel}); Input VAT: ${result.inputVAT.toLocaleString()} KHR (${outputModeLabel}, ${sellingCaseLabel}); Tax = Output VAT - Input VAT`;
   } else if (category === "salary") {
     const deductions = getSalaryDeductions();
     grossAmount = deductions.monthlySalary + deductions.fringeBenefit;
@@ -452,11 +486,30 @@ document.querySelectorAll('input[name="propertyMode"]').forEach((radio) => {
     calculate();
   });
 });
-getVatModeRadios().forEach((radio) => {
+
+elements.purchasingAmount.addEventListener("input", (e) => {
+  formatCurrencyInput(e);
+  calculate();
+});
+
+elements.sellingAmount.addEventListener("input", (e) => {
+  formatCurrencyInput(e);
+  calculate();
+});
+
+document.querySelectorAll('input[name="purchasingVatMode"]').forEach((radio) => {
   radio.addEventListener("change", calculate);
 });
 
-document.querySelectorAll('input[name="vatType"]').forEach((radio) => {
+document.querySelectorAll('input[name="purchasingVatCase"]').forEach((radio) => {
+  radio.addEventListener("change", calculate);
+});
+
+document.querySelectorAll('input[name="outputVatMode"]').forEach((radio) => {
+  radio.addEventListener("change", calculate);
+});
+
+document.querySelectorAll('input[name="sellingVatCase"]').forEach((radio) => {
   radio.addEventListener("change", calculate);
 });
 

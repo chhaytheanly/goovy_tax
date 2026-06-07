@@ -16,41 +16,34 @@ export function updateLanguage(currentLanguage, elements) {
     mainTitle.classList.add("kh-title");
   }
 
-  document.getElementById("subTitle").innerText = t.subTitle;
-  document.getElementById("lblAmount").innerText = t.lblAmount;
-  document.getElementById("lblCategory").innerText = t.lblCategory;
-  const lblIncomeTaxType = document.getElementById("lblIncomeTaxType");
-  if (lblIncomeTaxType) lblIncomeTaxType.innerText = t.lblIncomeTaxType;
-  const lblWhtSubcategory = document.getElementById("lblWhtSubcategory");
-  if (lblWhtSubcategory) lblWhtSubcategory.innerText = t.lblWhtSubcategory;
-  const lblWhtType = document.getElementById("lblWhtType");
-  if (lblWhtType) lblWhtType.innerText = t.lblWhtType;
-  document.getElementById("lblVatMode").innerText = t.lblVatMode;
-  document.getElementById("optExclusive").innerText = t.optExclusive;
-  document.getElementById("optInclusive").innerText = t.optInclusive;
-  const lblVatType = document.getElementById("lblVatType");
-  if (lblVatType) lblVatType.innerText = t.lblVatType;
-  const optVatDomestic = document.getElementById("optVatDomestic");
-  if (optVatDomestic) optVatDomestic.innerText = t.optVatDomestic;
-  const optVatImport = document.getElementById("optVatImport");
-  if (optVatImport) optVatImport.innerText = t.optVatImport;
-  const optVatExport = document.getElementById("optVatExport");
-  if (optVatExport) optVatExport.innerText = t.optVatExport;
-  document.getElementById("deductionsTitle").innerText = t.deductionsTitle;
-  document.getElementById("lblMonthlyIncome").innerText = t.lblMonthlyIncome;
-  document.getElementById("lblFringeBenefit").innerText = t.lblFringeBenefit;
-  document.getElementById("lblForeignerStatus").innerText =
-    t.lblForeignerStatus;
-  document.getElementById("optLocalResident").innerText = t.optLocalResident;
-  document.getElementById("optForeigner").innerText = t.optForeigner;
-  document.getElementById("lblSpouseStatus").innerText = t.lblSpouseStatus;
-  document.getElementById("optNoSpouse").innerText = t.optNoSpouse;
-  document.getElementById("optHousewife").innerText = t.optHousewife;
-  document.getElementById("lblChildren").innerText = t.lblChildren;
-  document.getElementById("childrenHint").innerText = t.childrenHint;
-  document.getElementById("lblOtherDependents").innerText =
-    t.lblOtherDependents;
-  document.getElementById("otherHint").innerText = t.otherHint;
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = value;
+  };
+
+  setText("subTitle", t.subTitle);
+  setText("lblAmount", t.lblAmount);
+  setText("lblCategory", t.lblCategory);
+  setText("lblIncomeTaxType", t.lblIncomeTaxType);
+  setText("lblWhtSubcategory", t.lblWhtSubcategory);
+  setText("lblWhtType", t.lblWhtType);
+  setText("lblVatMode", t.lblVatMode);
+  setText("lblPurchasingVatMode", t.lblVatMode);
+  setText("lblOutputVatMode", t.lblVatMode);
+  setText("lblVatType", t.lblVatType);
+  setText("deductionsTitle", t.deductionsTitle);
+  setText("lblMonthlyIncome", t.lblMonthlyIncome);
+  setText("lblFringeBenefit", t.lblFringeBenefit);
+  setText("lblForeignerStatus", t.lblForeignerStatus);
+  setText("optLocalResident", t.optLocalResident);
+  setText("optForeigner", t.optForeigner);
+  setText("lblSpouseStatus", t.lblSpouseStatus);
+  setText("optNoSpouse", t.optNoSpouse);
+  setText("optHousewife", t.optHousewife);
+  setText("lblChildren", t.lblChildren);
+  setText("childrenHint", t.childrenHint);
+  setText("lblOtherDependents", t.lblOtherDependents);
+  setText("otherHint", t.otherHint);
   // document.getElementById("lblStandardRelief").innerText = t.lblStandardRelief;
   document.getElementById("lblSpouseDeduction").innerText =
     t.lblSpouseDeduction;

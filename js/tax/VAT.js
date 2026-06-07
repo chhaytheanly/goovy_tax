@@ -45,3 +45,43 @@ export function calculateImportVAT(amount, mode = "exclusive") {
 export function calculateExportVAT(amount, mode = "exclusive") {
   return calculateVAT(amount, mode, "export");
 }
+
+export function calculateVATAdvanced(
+  purchasingAmount,
+  purchasingMode = "exclusive",
+  purchasingCase = "withVat",
+  sellingAmount = 0,
+  sellingMode = "exclusive",
+  sellingCase = "withVat"
+) {
+  const purchase = Number(purchasingAmount) || 0;
+  const sell = Number(sellingAmount) || 0;
+  const purchaseRate = purchasingCase === "withVat" ? 0.1 : 0;
+  const sellRate = sellingCase === "export" ? 0 : 0.1;
+
+  const outputVAT = purchaseRate === 0
+    ? 0
+    : purchasingMode === "inclusive"
+      ? Math.round(purchase - purchase / (1 + purchaseRate))
+      : Math.round(purchase * purchaseRate);
+
+  const inputVAT = sellRate === 0
+    ? 0
+    : sellingMode === "inclusive"
+      ? Math.round(sell - sell / (1 + sellRate))
+      : Math.round(sell * sellRate);
+
+  const tax = Math.round(outputVAT - inputVAT);
+
+  return {
+    purchasingAmount: Math.round(purchase),
+    outputVAT,
+    purchasingMode,
+    purchasingCase,
+    sellingAmount: Math.round(sell),
+    inputVAT,
+    sellingMode,
+    sellingCase,
+    tax,
+  };
+}
