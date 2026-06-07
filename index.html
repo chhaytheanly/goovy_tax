@@ -449,9 +449,57 @@
           </select>
         </div>
 
-        <div class="form-group" id="specificRateGroup" style="display: none">
-          <label id="lblSpecificRate"><i class="fa-solid fa-percent"></i> Specific Tax Rate (%)</label>
-          <input type="number" id="specificRate" class="form-input" placeholder="Enter specific tax rate %" value="10" />
+        <div class="form-group deductions-section" id="specificDetailSection" style="display: none">
+          <div class="section-title" id="specificDetailTitle">
+            <i class="fa-solid fa-flask"></i> Specific Tax Detail
+          </div>
+
+          <div class="form-group">
+            <label id="lblSpecificAmount"><i class="fa-solid fa-money-bill-wave"></i> Amount</label>
+            <input type="text" id="specificAmount" class="form-input" placeholder="Enter amount" value="5,000,000" />
+            <div class="currency-group">
+              <label class="currency-label" id="lblSpecificCurrency">Currency</label>
+              <div class="radio-group currency-toggle">
+                <label class="radio-label">
+                  <input type="radio" name="specificCurrency" value="khr" checked />
+                  <span class="currency-khr" id="optSpecificKHR">KHR</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="specificCurrency" value="usd" />
+                  <span class="currency-usd" id="optSpecificUSD">USD</span>
+                </label>
+              </div>
+              <small class="hint-text currency-hint" id="specificCurrencyHint">*USD will be converted at 4,100 KHR</small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label id="lblSpecificStatus"><i class="fa-solid fa-building"></i> Status</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="specificStatus" value="local" checked />
+                <span id="optSpecificLocal">Local Company (Rate: 90%)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="specificStatus" value="foreigner" />
+                <span id="optSpecificForeigner">Foreigner Company (Rate: 100%)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label id="lblSpecificType"><i class="fa-solid fa-tags"></i> Type</label>
+            <select id="specificType" class="form-select">
+              <option value="wine">Wine and Liquor (35%)</option>
+              <option value="beer">Beer (30%)</option>
+              <option value="ciga">Ciga (25%)</option>
+              <option value="cigaratte">Cigaratte (20%)</option>
+              <option value="energy">Energy Drinks (15%)</option>
+              <option value="beverage">Laverage, Entertainment Service, Air Travel (10%)</option>
+              <option value="cement">Cement (5%)</option>
+              <option value="telecom">Telecommunications (3%)</option>
+            </select>
+          </div>
         </div>
 
         <div class="form-group" id="vehicleGroup" style="display: none">

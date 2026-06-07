@@ -64,7 +64,7 @@ function updateCategoryVisibility() {
   const isProperty = category === "property";
 
   elements.baseAmountGroup.style.display =
-    (isSalary || isRental || isTransportation || isPatent || isVehicle || isProperty || isVat) ? "none" : "block";
+    (isSalary || isRental || isTransportation || isPatent || isVehicle || isProperty || isVat || isSpecific) ? "none" : "block";
   const incomeTaxTypeGroup = document.getElementById("incomeTaxTypeGroup");
   if (incomeTaxTypeGroup) incomeTaxTypeGroup.style.display = isIncomeTax ? "block" : "none";
   const whtSubcategoryGroup = document.getElementById("whtSubcategoryGroup");
@@ -82,8 +82,8 @@ function updateCategoryVisibility() {
   const patentGroup = document.getElementById("patentGroup");
   if(patentGroup) patentGroup.style.display = isPatent ? "block" : "none";
   
-  const specificRateGroup = document.getElementById("specificRateGroup");
-  if(specificRateGroup) specificRateGroup.style.display = isSpecific ? "block" : "none";
+  const specificDetailSection = document.getElementById("specificDetailSection");
+  if(specificDetailSection) specificDetailSection.style.display = isSpecific ? "block" : "none";
   
   const vehicleGroup = document.getElementById("vehicleGroup");
   if(vehicleGroup) vehicleGroup.style.display = isVehicle ? "block" : "none";
@@ -378,13 +378,32 @@ function calculate() {
     total = result.total;
     breakdown = currentLanguage === "en" ? "Public Lighting Tax: 5% on alcohol and tobacco" : "ពន្ធបំភ្លឺសាធារណៈ: ៥% លើគ្រឿងស្រវឹង និងថ្នាំជក់";
   } else if (category === "specific") {
-    const specRateStr = document.getElementById("specificRate").value;
-    const specRate = (parseFloat(specRateStr) || 0) / 100;
-    const result = calculateSpecificTax(amount, specRate);
+    amountRaw = parseFloat(document.getElementById("specificAmount").value.replace(/,/g, "")) || 0;
+    amount = convertToKhr(amountRaw, getSelectedCurrency("specificCurrency"));
+    const specStatus = document.querySelector('input[name="specificStatus"]:checked')?.value || "local";
+    const specRate = specStatus === "local" ? 0.90 : 1;
+    const specType = document.getElementById("specificType")?.value || "wine";
+    const typeRates = {
+      wine: 0.35,
+      beer: 0.30,
+      ciga: 0.25,
+      cigaratte: 0.20,
+      energy: 0.15,
+      beverage: 0.10,
+      cement: 0.05,
+      telecom: 0.03,
+    };
+    const typeRate = typeRates[specType] || 0.35;
+    const result = calculateSpecificTax(amount, specRate, typeRate);
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
     total = result.total;
-    breakdown = currentLanguage === "en" ? `Specific Tax: ${(specRate*100).toFixed(0)}% on specific goods` : `អាករពិសេស: ${(specRate*100).toFixed(0)}% លើទំនិញពិសេស`;
+    const statusLabel = specStatus === "local" ? "Local Company (90%)" : "Foreigner Company (100%)";
+    const typeLabels = { wine: "Wine and Liquor (35%)", beer: "Beer (30%)", ciga: "Ciga (25%)", cigaratte: "Cigaratte (20%)", energy: "Energy Drinks (15%)", beverage: "Laverage, Entertainment Service, Air Travel (10%)", cement: "Cement (5%)", telecom: "Telecommunications (3%)" };
+    const typeLabel = typeLabels[specType] || "Wine and Liquor (35%)";
+    breakdown = currentLanguage === "en"
+      ? `Specific Tax: Amount ${amount.toLocaleString()} KHR × ${statusLabel} × ${typeLabel} = ${taxAmount.toLocaleString()} KHR`
+      : `អាករពិសេស: ទឹកប្រាក់ ${amount.toLocaleString()} រៀល × ${statusLabel} × ${typeLabel} = ${taxAmount.toLocaleString()} រៀល`;
   } else if (category === "vehicle") {
     const vType = document.getElementById("vehicleType").value;
     const result = calculateVehicleTax(vType);
@@ -541,8 +560,19 @@ getCurrencyRadios().forEach((radio) => {
 
 document.getElementById("dutyRate")?.addEventListener("input", calculate);
 document.getElementById("patentType")?.addEventListener("change", calculate);
-document.getElementById("specificRate")?.addEventListener("input", calculate);
 document.getElementById("vehicleType")?.addEventListener("change", calculate);
+
+const specificAmount = document.getElementById("specificAmount");
+if (specificAmount) {
+  specificAmount.addEventListener("input", (e) => {
+    formatCurrencyInput(e);
+    calculate();
+  });
+}
+document.querySelectorAll('input[name="specificStatus"]').forEach((radio) => {
+  radio.addEventListener("change", calculate);
+});
+document.getElementById("specificType")?.addEventListener("change", calculate);
 
 elements.calculateBtn.addEventListener("click", calculate);
 

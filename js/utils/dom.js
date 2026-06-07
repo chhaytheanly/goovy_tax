@@ -63,6 +63,6 @@ export function getVatType() {
 
 export function getCurrencyRadios() {
   return document.querySelectorAll(
-    'input[name="baseCurrency"], input[name="salaryCurrency"], input[name="fringeCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"], input[name="propertyCurrency"], input[name="purchasingCurrency"], input[name="sellingCurrency"]',
+    'input[name="baseCurrency"], input[name="salaryCurrency"], input[name="fringeCurrency"], input[name="rentalCurrency"], input[name="transportCurrency"], input[name="propertyCurrency"], input[name="purchasingCurrency"], input[name="sellingCurrency"], input[name="specificCurrency"]',
   );
 }

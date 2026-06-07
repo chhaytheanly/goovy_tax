@@ -143,6 +143,25 @@ export function updateLanguage(currentLanguage, elements) {
   
   const elSpecificRate = document.getElementById("lblSpecificRate");
   if(elSpecificRate) elSpecificRate.innerHTML = `<i class="fa-solid fa-percent"></i> ${t.lblSpecificRate}`;
+
+  const specDetailTitle = document.getElementById("specificDetailTitle");
+  if(specDetailTitle) specDetailTitle.innerHTML = `<i class="fa-solid fa-flask"></i> ${t.specificDetailTitle}`;
+  setText("lblSpecificAmount", t.lblSpecificAmount);
+  setText("lblSpecificCurrency", t.lblSpecificCurrency);
+  setText("lblSpecificStatus", t.lblSpecificStatus);
+  setText("optSpecificLocal", t.optSpecificLocal);
+  setText("optSpecificForeigner", t.optSpecificForeigner);
+  setText("lblSpecificType", t.lblSpecificType);
+
+  const specType = document.getElementById("specificType");
+  if(specType) {
+    const specTypeOptions = ["wine", "beer", "ciga", "cigaratte", "energy", "beverage", "cement", "telecom"];
+    const specTypeLabels = [t.optSpecificWine, t.optSpecificBeer, t.optSpecificCiga, t.optSpecificCigaratte, t.optSpecificEnergy, t.optSpecificBeverage, t.optSpecificCement, t.optSpecificTelecom];
+    specTypeOptions.forEach((val, i) => {
+      const opt = specType.querySelector(`option[value="${val}"]`);
+      if(opt) opt.text = specTypeLabels[i];
+    });
+  }
   
   const elVehicleType = document.getElementById("lblVehicleType");
   if(elVehicleType) elVehicleType.innerHTML = `<i class="fa-solid fa-car"></i> ${t.lblVehicleType}`;
