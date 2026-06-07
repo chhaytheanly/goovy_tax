@@ -105,7 +105,7 @@
             <option value="patent">Patent Tax</option>
             <option value="publicLighting">Public Lighting Tax (5%)</option>
             <option value="specific">Specific Tax</option>
-            <option value="vehicle">Vehicle Tax</option>
+            <option value="vehicle">Tax on Means of Transportation</option>
           </select>
         </div>
 
@@ -657,15 +657,144 @@
           </div>
         </div>
 
-        <div class="form-group" id="vehicleGroup" style="display: none">
-          <label id="lblVehicleType"><i class="fa-solid fa-car"></i> Vehicle Type</label>
-          <select id="vehicleType" class="form-select">
-            <option value="MOTORBIKE">Motorbike</option>
-            <option value="CAR_SMALL">Small Car</option>
-            <option value="CAR_MEDIUM">Medium Car</option>
-            <option value="CAR_LARGE">Large Car</option>
-            <option value="LUXURY">Luxury Vehicle</option>
-          </select>
+        <div class="form-group deductions-section" id="vehicleGroup" style="display: none">
+          <div class="section-title" id="lblTransportationTitle">
+            <i class="fa-solid fa-car"></i> <span id="lblTransportationTitleText">Tax on Means of Transportation</span>
+          </div>
+
+          <div class="form-group">
+            <label id="lblTransportType"><i class="fa-solid fa-road"></i> Type of Transportation</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="transportType" value="land" checked />
+                <span id="optLandTransport">Land Transportation</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="transportType" value="water" />
+                <span id="optWaterTransport">Water Transportation</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="landTransportSection">
+            <div class="form-group">
+              <label id="lblVehicleTypeNew"><i class="fa-solid fa-truck"></i> Vehicle Type</label>
+              <select id="vehicleType" class="form-select">
+                <option value="passengerCar" id="optVehPassengerCar">Passenger Cars</option>
+                <option value="passengerTransport" id="optVehPassengerTransport">Passenger Transport Vehicles (Buses/Vans)</option>
+                <option value="truck" id="optVehTruck">Trucks</option>
+                <option value="modify" id="optVehModify">Modify Vehicle</option>
+              </select>
+            </div>
+
+            <div id="passengerCarGroup" class="form-group" style="display:none">
+              <div class="form-group">
+                <label id="lblCarYear"><i class="fa-solid fa-calendar"></i> Year of Production</label>
+                <input type="number" id="carYear" class="form-input" placeholder="e.g. 2020" value="2020" min="1900" />
+                <small class="hint-text" id="carYearHint">Year of Vehicle = Current Year - Year of Production</small>
+              </div>
+              <div class="form-group">
+                <label id="lblCarCylinder"><i class="fa-solid fa-gauge-high"></i> Cylinder Size of the Vehicle (cc)</label>
+                <input type="number" id="carCylinder" class="form-input" placeholder="e.g. 1500" value="1500" min="0" />
+              </div>
+            </div>
+
+            <div id="passengerTransportGroup" class="form-group" style="display:none">
+              <div class="form-group">
+                <label id="lblBusYear"><i class="fa-solid fa-calendar"></i> Year of Production</label>
+                <input type="number" id="busYear" class="form-input" placeholder="e.g. 2020" value="2020" min="1900" />
+                <small class="hint-text" id="busYearHint">Year of Vehicle = Current Year - Year of Production</small>
+              </div>
+              <div class="form-group">
+                <label id="lblBusSeats"><i class="fa-solid fa-chair"></i> Number of Seats</label>
+                <input type="number" id="busSeats" class="form-input" placeholder="e.g. 20" value="10" min="1" />
+              </div>
+            </div>
+
+            <div id="truckGroup" class="form-group" style="display:none">
+              <div class="form-group">
+                <label id="lblTruckWeight"><i class="fa-solid fa-weight-scale"></i> Weight (kg)</label>
+                <input type="number" id="truckWeight" class="form-input" placeholder="e.g. 5000" value="5000" min="0" />
+              </div>
+            </div>
+
+            <div id="modifyGroup" class="form-group" style="display:none">
+              <div class="form-group">
+                <label id="lblModifyType"><i class="fa-solid fa-wrench"></i> Type of Modify</label>
+                <select id="modifyType" class="form-select">
+                  <option value="rormork4" id="optModifyRormork4">Modify Rormork (2 Axles, 4 Wheels)</option>
+                  <option value="rormork8" id="optModifyRormork8">Modify Rormork (2 Axles, 8 Wheels)</option>
+                  <option value="truck6" id="optModifyTruck6">Modify Trucks (3 Axles, 6 Wheels)</option>
+                  <option value="truck10" id="optModifyTruck10">Modify Trucks (3 Axles, 10 Wheels)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="waterTransportSection" style="display:none">
+            <div class="form-group">
+              <label id="lblWaterType"><i class="fa-solid fa-ship"></i> Type</label>
+              <select id="waterType" class="form-select">
+                <option value="river" id="optWaterRiver">River Watercraft</option>
+                <option value="sea" id="optWaterSea">Sea Watercraft</option>
+                <option value="tugs" id="optWaterTugs">Tugs &amp; Fishing Boats</option>
+                <option value="speedboat" id="optWaterSpeedboat">Speedboats</option>
+              </select>
+            </div>
+
+            <div id="powerGroup" class="form-group" style="display:none">
+              <div class="form-group">
+                <label id="lblPowerHP"><i class="fa-solid fa-horse"></i> Power (HP)</label>
+                <input type="number" id="powerHP" class="form-input" placeholder="e.g. 200" value="200" min="0" />
+              </div>
+            </div>
+
+            <div id="riverTypeGroup" class="form-group" style="display:none">
+              <div class="form-group">
+                <label id="lblRiverType"><i class="fa-solid fa-water"></i> Type River Watercraft</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="riverType" value="cargo" checked />
+                    <span id="optRiverCargo">Cargo Ships/Barges</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="riverType" value="passenger" />
+                    <span id="optRiverPassenger">Passenger Boats</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div id="seaTypeGroup" class="form-group" style="display:none">
+              <div class="form-group">
+                <label id="lblSeaType"><i class="fa-solid fa-water"></i> Type Sea Watercraft</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="seaType" value="cargo" checked />
+                    <span id="optSeaCargo">Cargo Ships/Barges</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="seaType" value="passenger" />
+                    <span id="optSeaPassenger">Passenger Boats</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div id="cargoWeightGroup" class="form-group" style="display:none">
+              <div class="form-group">
+                <label id="lblCargoWeight"><i class="fa-solid fa-weight-scale"></i> Weight (kg)</label>
+                <input type="number" id="cargoWeight" class="form-input" placeholder="e.g. 50000" value="50000" min="0" />
+              </div>
+            </div>
+
+            <div id="boatLengthGroup" class="form-group" style="display:none">
+              <div class="form-group">
+                <label id="lblBoatLength"><i class="fa-solid fa-ruler"></i> Length (m)</label>
+                <input type="number" id="boatLength" class="form-input" placeholder="e.g. 25" value="25" min="0" />
+              </div>
+            </div>
+          </div>
         </div>
 
         <button id="calculateBtn" class="calculate-button">

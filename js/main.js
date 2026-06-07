@@ -93,7 +93,10 @@ function updateCategoryVisibility() {
   if(specificDetailSection) specificDetailSection.style.display = isSpecific ? "block" : "none";
   
   const vehicleGroup = document.getElementById("vehicleGroup");
-  if(vehicleGroup) vehicleGroup.style.display = isVehicle ? "block" : "none";
+  if(vehicleGroup) {
+    vehicleGroup.style.display = isVehicle ? "block" : "none";
+    if (isVehicle) updateVehicleVisibility();
+  }
 
   elements.propertyModeGroup.style.display = isProperty ? "block" : "none";
   elements.propertyValueGroup.style.display = isProperty ? "block" : "none";
@@ -209,6 +212,68 @@ function updateStampDutyVisibility() {
   document.getElementById("stampDutySpecialGroup").style.display = isTransfer ? "block" : "none";
   document.getElementById("stampDutyFixedGroup").style.display = isDissolution ? "block" : "none";
   document.getElementById("stampDutyNote").style.display = isDissolution ? "none" : "block";
+}
+
+function updateVehicleVisibility() {
+  const transportType = document.querySelector('input[name="transportType"]:checked')?.value || "land";
+  const isLand = transportType === "land";
+  const isWater = transportType === "water";
+
+  document.getElementById("landTransportSection").style.display = isLand ? "block" : "none";
+  document.getElementById("waterTransportSection").style.display = isWater ? "block" : "none";
+
+  if (isLand) {
+    updateLandVehicleVisibility();
+  }
+
+  if (isWater) {
+    updateWaterVehicleVisibility();
+  }
+}
+
+function updateLandVehicleVisibility() {
+  const vType = document.getElementById("vehicleType")?.value || "passengerCar";
+
+  document.getElementById("passengerCarGroup").style.display = vType === "passengerCar" ? "block" : "none";
+  document.getElementById("passengerTransportGroup").style.display = vType === "passengerTransport" ? "block" : "none";
+  document.getElementById("truckGroup").style.display = vType === "truck" ? "block" : "none";
+  document.getElementById("modifyGroup").style.display = vType === "modify" ? "block" : "none";
+}
+
+function updateWaterVehicleVisibility() {
+  const wType = document.getElementById("waterType")?.value || "river";
+
+  const hasPower = wType === "tugs" || wType === "speedboat";
+  const isRiver = wType === "river";
+  const isSea = wType === "sea";
+
+  document.getElementById("powerGroup").style.display = hasPower ? "block" : "none";
+  document.getElementById("riverTypeGroup").style.display = isRiver ? "block" : "none";
+  document.getElementById("seaTypeGroup").style.display = isSea ? "block" : "none";
+
+  if (isRiver) {
+    updateRiverTypeVisibility();
+  }
+  if (isSea) {
+    updateSeaTypeVisibility();
+  }
+
+  if (!hasPower && !isRiver && !isSea) {
+    document.getElementById("cargoWeightGroup").style.display = "none";
+    document.getElementById("boatLengthGroup").style.display = "none";
+  }
+}
+
+function updateRiverTypeVisibility() {
+  const rType = document.querySelector('input[name="riverType"]:checked')?.value || "cargo";
+  document.getElementById("cargoWeightGroup").style.display = rType === "cargo" ? "block" : "none";
+  document.getElementById("boatLengthGroup").style.display = rType === "passenger" ? "block" : "none";
+}
+
+function updateSeaTypeVisibility() {
+  const sType = document.querySelector('input[name="seaType"]:checked')?.value || "cargo";
+  document.getElementById("cargoWeightGroup").style.display = sType === "cargo" ? "block" : "none";
+  document.getElementById("boatLengthGroup").style.display = sType === "passenger" ? "block" : "none";
 }
 
 function updateDeductionSummary() {
@@ -540,16 +605,93 @@ function calculate() {
       ? `<div class="bd"><div class="bd-title">Specific Tax</div><div class="bd-row"><span class="bd-label">Base Amount</span><span class="bd-value">${amount.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Status Rate</span><span class="bd-value">${statusLabel}</span></div><div class="bd-row"><span class="bd-label">Type Rate</span><span class="bd-value">${typeLabel}</span></div><div class="bd-formula">Tax = ${amount.toLocaleString()} × ${Math.round(specRate * 100)}% × ${Math.round(typeRate * 100)}%<br>= ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
       : `<div class="bd"><div class="bd-title">អាករពិសេស</div><div class="bd-row"><span class="bd-label">ទឹកប្រាក់</span><span class="bd-value">${amount.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រាស្ថានភាព</span><span class="bd-value">${statusLabel}</span></div><div class="bd-row"><span class="bd-label">អត្រាប្រភេទ</span><span class="bd-value">${typeLabel}</span></div><div class="bd-formula">ពន្ធ = ${amount.toLocaleString()} × ${Math.round(specRate * 100)}% × ${Math.round(typeRate * 100)}%<br>= ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
   } else if (category === "vehicle") {
-    const vType = document.getElementById("vehicleType").value;
-    const result = calculateVehicleTax(vType);
+    const transportType = document.querySelector('input[name="transportType"]:checked')?.value || "land";
+    const vType = document.getElementById("vehicleType")?.value || "passengerCar";
+    const carYear = document.getElementById("carYear")?.value || "2020";
+    const carCylinder = document.getElementById("carCylinder")?.value || "1500";
+    const busYear = document.getElementById("busYear")?.value || "2020";
+    const busSeats = document.getElementById("busSeats")?.value || "10";
+    const truckWeight = document.getElementById("truckWeight")?.value || "5000";
+    const modifyType = document.getElementById("modifyType")?.value || "rormork4";
+    const waterType = document.getElementById("waterType")?.value || "river";
+    const powerHP = document.getElementById("powerHP")?.value || "200";
+    const riverType = document.querySelector('input[name="riverType"]:checked')?.value || "cargo";
+    const seaType = document.querySelector('input[name="seaType"]:checked')?.value || "cargo";
+    const cargoWeight = document.getElementById("cargoWeight")?.value || "50000";
+    const boatLength = document.getElementById("boatLength")?.value || "25";
+
+    const data = {
+      transportType, vehicleType: vType, carYear, carCylinder,
+      busYear, busSeats, truckWeight, modifyType,
+      waterType, powerHP, riverType, seaType, cargoWeight, boatLength,
+    };
+
+    const result = calculateVehicleTax(data);
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
     total = result.total;
     grossAmount = 0;
-    const vTypeLabel = document.getElementById("vehicleType")?.selectedOptions[0]?.text || vType;
+    const d = result.details;
+
+    let breakdownTitle = "Tax on Means of Transportation";
+    let breakdownKhmerTitle = "ពន្ធមធ្យោបាយដឹកជញ្ជូន";
+    let rowsEn = "";
+    let rowsKh = "";
+
+    if (transportType === "land") {
+      const vTypeLabel = document.getElementById("vehicleType")?.selectedOptions[0]?.text || vType;
+      rowsEn += `<div class="bd-row"><span class="bd-label">Type of Transportation</span><span class="bd-value">Land Transportation</span></div><div class="bd-row"><span class="bd-label">Vehicle Type</span><span class="bd-value">${vTypeLabel}</span></div>`;
+      rowsKh += `<div class="bd-row"><span class="bd-label">ប្រភេទនៃការដឹកជញ្ជូន</span><span class="bd-value">ការដឹកជញ្ជូនតាមផ្លូវគោក</span></div><div class="bd-row"><span class="bd-label">ប្រភេទយានយន្ត</span><span class="bd-value">${vTypeLabel}</span></div>`;
+
+      if (vType === "passengerCar") {
+        rowsEn += `<div class="bd-row"><span class="bd-label">Year of Vehicle</span><span class="bd-value">${d.yearOfVehicle} years</span></div><div class="bd-row"><span class="bd-label">Cylinder</span><span class="bd-value">${d.cylinder} cc</span></div>`;
+        rowsKh += `<div class="bd-row"><span class="bd-label">អាយុយានយន្ត</span><span class="bd-value">${d.yearOfVehicle} ឆ្នាំ</span></div><div class="bd-row"><span class="bd-label">ស៊ីឡាំង</span><span class="bd-value">${d.cylinder} cc</span></div>`;
+      } else if (vType === "passengerTransport") {
+        rowsEn += `<div class="bd-row"><span class="bd-label">Year of Vehicle</span><span class="bd-value">${d.yearOfVehicle} years</span></div><div class="bd-row"><span class="bd-label">Seats</span><span class="bd-value">${d.seats}</span></div>`;
+        rowsKh += `<div class="bd-row"><span class="bd-label">អាយុយានយន្ត</span><span class="bd-value">${d.yearOfVehicle} ឆ្នាំ</span></div><div class="bd-row"><span class="bd-label">កៅអី</span><span class="bd-value">${d.seats}</span></div>`;
+      } else if (vType === "truck") {
+        rowsEn += `<div class="bd-row"><span class="bd-label">Weight</span><span class="bd-value">${parseInt(d.weight || 0).toLocaleString()} kg</span></div>`;
+        rowsKh += `<div class="bd-row"><span class="bd-label">ទម្ងន់</span><span class="bd-value">${parseInt(d.weight || 0).toLocaleString()} គ.ក្រ</span></div>`;
+      } else if (vType === "modify") {
+        const modLabel = document.getElementById("modifyType")?.selectedOptions[0]?.text || d.modifyType;
+        rowsEn += `<div class="bd-row"><span class="bd-label">Modify Type</span><span class="bd-value">${modLabel}</span></div>`;
+        rowsKh += `<div class="bd-row"><span class="bd-label">ប្រភេទកែប្រែ</span><span class="bd-value">${modLabel}</span></div>`;
+      }
+    } else {
+      const wTypeLabel = document.getElementById("waterType")?.selectedOptions[0]?.text || waterType;
+      rowsEn += `<div class="bd-row"><span class="bd-label">Type of Transportation</span><span class="bd-value">Water Transportation</span></div><div class="bd-row"><span class="bd-label">Type</span><span class="bd-value">${wTypeLabel}</span></div>`;
+      rowsKh += `<div class="bd-row"><span class="bd-label">ប្រភេទនៃការដឹកជញ្ជូន</span><span class="bd-value">ការដឹកជញ្ជូនតាមផ្លូវទឹក</span></div><div class="bd-row"><span class="bd-label">ប្រភេទ</span><span class="bd-value">${wTypeLabel}</span></div>`;
+
+      if (waterType === "tugs" || waterType === "speedboat") {
+        rowsEn += `<div class="bd-row"><span class="bd-label">Power</span><span class="bd-value">${parseInt(d.power || 0).toLocaleString()} HP</span></div>`;
+        rowsKh += `<div class="bd-row"><span class="bd-label">កម្លាំង</span><span class="bd-value">${parseInt(d.power || 0).toLocaleString()} សេះ</span></div>`;
+      } else if (waterType === "river") {
+        const subLabel = document.querySelector(`input[name="riverType"]:checked ~ span`)?.textContent || (riverType === "cargo" ? "Cargo Ships/Barges" : "Passenger Boats");
+        rowsEn += `<div class="bd-row"><span class="bd-label">River Type</span><span class="bd-value">${riverType === "cargo" ? "Cargo Ships/Barges" : "Passenger Boats"}</span></div>`;
+        rowsKh += `<div class="bd-row"><span class="bd-label">ប្រភេទ</span><span class="bd-value">${riverType === "cargo" ? "កប៉ាល់ដឹកទំនិញ/សាឡាង" : "ទូកដឹកអ្នកដំណើរ"}</span></div>`;
+        if (riverType === "cargo") {
+          rowsEn += `<div class="bd-row"><span class="bd-label">Weight</span><span class="bd-value">${parseInt(d.weight || 0).toLocaleString()} kg</span></div>`;
+          rowsKh += `<div class="bd-row"><span class="bd-label">ទម្ងន់</span><span class="bd-value">${parseInt(d.weight || 0).toLocaleString()} គ.ក្រ</span></div>`;
+        } else {
+          rowsEn += `<div class="bd-row"><span class="bd-label">Length</span><span class="bd-value">${parseInt(d.length || 0).toLocaleString()} m</span></div>`;
+          rowsKh += `<div class="bd-row"><span class="bd-label">ប្រវែង</span><span class="bd-value">${parseInt(d.length || 0).toLocaleString()} ម</span></div>`;
+        }
+      } else if (waterType === "sea") {
+        rowsEn += `<div class="bd-row"><span class="bd-label">Sea Type</span><span class="bd-value">${seaType === "cargo" ? "Cargo Ships/Barges" : "Passenger Boats"}</span></div>`;
+        rowsKh += `<div class="bd-row"><span class="bd-label">ប្រភេទ</span><span class="bd-value">${seaType === "cargo" ? "កប៉ាល់ដឹកទំនិញ/សាឡាង" : "ទូកដឹកអ្នកដំណើរ"}</span></div>`;
+        if (seaType === "cargo") {
+          rowsEn += `<div class="bd-row"><span class="bd-label">Weight</span><span class="bd-value">${parseInt(d.weight || 0).toLocaleString()} kg</span></div>`;
+          rowsKh += `<div class="bd-row"><span class="bd-label">ទម្ងន់</span><span class="bd-value">${parseInt(d.weight || 0).toLocaleString()} គ.ក្រ</span></div>`;
+        } else {
+          rowsEn += `<div class="bd-row"><span class="bd-label">Length</span><span class="bd-value">${parseInt(d.length || 0).toLocaleString()} m</span></div>`;
+          rowsKh += `<div class="bd-row"><span class="bd-label">ប្រវែង</span><span class="bd-value">${parseInt(d.length || 0).toLocaleString()} ម</span></div>`;
+        }
+      }
+    }
+
     breakdown = currentLanguage === "en"
-      ? `<div class="bd"><div class="bd-title">Vehicle Tax</div><div class="bd-row"><span class="bd-label">Vehicle Type</span><span class="bd-value">${vTypeLabel}</span></div><div class="bd-row"><span class="bd-label">Fixed Annual Amount</span><span class="bd-value">${taxAmount.toLocaleString()} KHR</span></div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
-      : `<div class="bd"><div class="bd-title">ពន្ធមធ្យោបាយដឹកជញ្ជូន</div><div class="bd-row"><span class="bd-label">ប្រភេទយានយន្ត</span><span class="bd-value">${vTypeLabel}</span></div><div class="bd-row"><span class="bd-label">ចំនួនថេរប្រចាំឆ្នាំ</span><span class="bd-value">${taxAmount.toLocaleString()} រៀល</span></div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
+      ? `<div class="bd"><div class="bd-title">${breakdownTitle}</div>${rowsEn}<div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+      : `<div class="bd"><div class="bd-title">${breakdownKhmerTitle}</div>${rowsKh}<div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
 } else if (category === "transportation") {
     amountRaw =
       parseFloat(elements.transportationExpense.value.replace(/,/g, "")) || 0;
@@ -744,7 +886,48 @@ getCurrencyRadios().forEach((radio) => {
 
 document.getElementById("dutyRate")?.addEventListener("input", calculate);
 document.getElementById("patentType")?.addEventListener("change", calculate);
-document.getElementById("vehicleType")?.addEventListener("change", calculate);
+document.querySelectorAll('input[name="transportType"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+    updateVehicleVisibility();
+    calculate();
+  });
+});
+
+document.getElementById("vehicleType")?.addEventListener("change", () => {
+  updateLandVehicleVisibility();
+  calculate();
+});
+
+document.getElementById("carYear")?.addEventListener("change", calculate);
+document.getElementById("carCylinder")?.addEventListener("change", calculate);
+document.getElementById("busYear")?.addEventListener("change", calculate);
+document.getElementById("busSeats")?.addEventListener("change", calculate);
+document.getElementById("truckWeight")?.addEventListener("change", calculate);
+document.getElementById("modifyType")?.addEventListener("change", calculate);
+
+document.getElementById("waterType")?.addEventListener("change", () => {
+  updateWaterVehicleVisibility();
+  calculate();
+});
+
+document.getElementById("powerHP")?.addEventListener("change", calculate);
+
+document.querySelectorAll('input[name="riverType"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+    updateRiverTypeVisibility();
+    calculate();
+  });
+});
+
+document.querySelectorAll('input[name="seaType"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+    updateSeaTypeVisibility();
+    calculate();
+  });
+});
+
+document.getElementById("cargoWeight")?.addEventListener("change", calculate);
+document.getElementById("boatLength")?.addEventListener("change", calculate);
 
 const specificAmount = document.getElementById("specificAmount");
 if (specificAmount) {

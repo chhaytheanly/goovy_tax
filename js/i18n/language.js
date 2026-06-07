@@ -198,8 +198,30 @@ export function updateLanguage(currentLanguage, elements) {
     });
   }
   
-  const elVehicleType = document.getElementById("lblVehicleType");
-  if(elVehicleType) elVehicleType.innerHTML = `<i class="fa-solid fa-car"></i> ${t.lblVehicleType}`;
+  // Transportation Tax section
+  setText("lblTransportationTitleText", t.lblTransportationTitleText);
+  setText("lblTransportType", t.lblTransportType);
+  setText("optLandTransport", t.optLandTransport);
+  setText("optWaterTransport", t.optWaterTransport);
+  setText("lblVehicleTypeNew", t.lblVehicleTypeNew);
+  setText("lblCarYear", t.lblCarYear);
+  setText("carYearHint", t.carYearHint);
+  setText("lblCarCylinder", t.lblCarCylinder);
+  setText("lblBusYear", t.lblBusYear);
+  setText("busYearHint", t.busYearHint);
+  setText("lblBusSeats", t.lblBusSeats);
+  setText("lblTruckWeight", t.lblTruckWeight);
+  setText("lblModifyType", t.lblModifyType);
+  setText("lblWaterType", t.lblWaterType);
+  setText("lblPowerHP", t.lblPowerHP);
+  setText("lblRiverType", t.lblRiverType);
+  setText("optRiverCargo", t.optRiverCargo);
+  setText("optRiverPassenger", t.optRiverPassenger);
+  setText("lblSeaType", t.lblSeaType);
+  setText("optSeaCargo", t.optSeaCargo);
+  setText("optSeaPassenger", t.optSeaPassenger);
+  setText("lblCargoWeight", t.lblCargoWeight);
+  setText("lblBoatLength", t.lblBoatLength);
 
   // Select Options for Patent
   const patentType = document.getElementById("patentType");
@@ -210,14 +232,31 @@ export function updateLanguage(currentLanguage, elements) {
     patentType.options[3].text = t.optPatentLargeEnt;
   }
 
-  // Select Options for Vehicle
+  // Select Options for Vehicle Type
   const vehicleType = document.getElementById("vehicleType");
   if(vehicleType) {
-    vehicleType.options[0].text = t.optVehMotorbike;
-    vehicleType.options[1].text = t.optVehCarSmall;
-    vehicleType.options[2].text = t.optVehCarMedium;
-    vehicleType.options[3].text = t.optVehCarLarge;
-    vehicleType.options[4].text = t.optVehLuxury;
+    vehicleType.options[0].text = t.optVehPassengerCar;
+    vehicleType.options[1].text = t.optVehPassengerTransport;
+    vehicleType.options[2].text = t.optVehTruck;
+    vehicleType.options[3].text = t.optVehModify;
+  }
+
+  // Select Options for Modify Type
+  const modifyType = document.getElementById("modifyType");
+  if(modifyType) {
+    modifyType.options[0].text = t.optModifyRormork4;
+    modifyType.options[1].text = t.optModifyRormork8;
+    modifyType.options[2].text = t.optModifyTruck6;
+    modifyType.options[3].text = t.optModifyTruck10;
+  }
+
+  // Select Options for Water Type
+  const waterType = document.getElementById("waterType");
+  if(waterType) {
+    waterType.options[0].text = t.optWaterRiver;
+    waterType.options[1].text = t.optWaterSea;
+    waterType.options[2].text = t.optWaterTugs;
+    waterType.options[3].text = t.optWaterSpeedboat;
   }
 
 
