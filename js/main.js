@@ -23,7 +23,7 @@ import { calculateVATAdvanced } from "./tax/VAT.js";
 import { updateLanguage } from "./i18n/language.js?v=2";
 import { setTranslations } from "./i18n/translations.js";
 import { calculateAccommodationTax } from "./tax/accommodationTax.js";
-import { calculateImportDuty } from "./tax/importDuty.js";
+import { calculateStampDuty } from "./tax/importDuty.js";
 import { calculatePatentTax } from "./tax/patent.js";
 import { calculatePublicLightingTax } from "./tax/publicLightingTax.js";
 import { calculateSpecificTax } from "./tax/specificTax.js";
@@ -66,7 +66,7 @@ function updateCategoryVisibility() {
   const isProperty = category === "property";
 
   elements.baseAmountGroup.style.display =
-    (isSalary || isRental || isTransportation || isPatent || isVehicle || isProperty || isVat || isSpecific) ? "none" : "block";
+    (isSalary || isRental || isTransportation || isPatent || isVehicle || isProperty || isVat || isSpecific || isImport) ? "none" : "block";
   const incomeTaxTypeGroup = document.getElementById("incomeTaxTypeGroup");
   if (incomeTaxTypeGroup) incomeTaxTypeGroup.style.display = isIncomeTax ? "block" : "none";
   const whtSubcategoryGroup = document.getElementById("whtSubcategoryGroup");
@@ -81,8 +81,10 @@ function updateCategoryVisibility() {
   }
   elements.transportationExpenseGroup.style.display = isTransportation ? "block" : "none";
 
-  const dutyRateGroup = document.getElementById("dutyRateGroup");
-  if(dutyRateGroup) dutyRateGroup.style.display = isImport ? "block" : "none";
+  elements.stampDutySection.style.display = isImport ? "block" : "none";
+  if (isImport) {
+    updateStampDutyVisibility();
+  }
   
   const patentGroup = document.getElementById("patentGroup");
   if(patentGroup) patentGroup.style.display = isPatent ? "block" : "none";
@@ -191,6 +193,22 @@ function getRentalDeductions() {
     otherDependents,
     varietySpending,
   });
+}
+
+function getStampDutyType() {
+  return elements.stampDutyType?.value || "transfer";
+}
+
+function updateStampDutyVisibility() {
+  const type = getStampDutyType();
+  const isTransfer = type === "transfer";
+  const isCompanyShare = type === "companyShare";
+  const isDissolution = type === "dissolution";
+
+  document.getElementById("stampDutyValueGroup").style.display = isDissolution ? "none" : "block";
+  document.getElementById("stampDutySpecialGroup").style.display = isTransfer ? "block" : "none";
+  document.getElementById("stampDutyFixedGroup").style.display = isDissolution ? "block" : "none";
+  document.getElementById("stampDutyNote").style.display = isDissolution ? "none" : "block";
 }
 
 function updateDeductionSummary() {
@@ -617,6 +635,24 @@ elements.rentalVarietySpending.addEventListener("input", (e) => {
 elements.transportationExpense.addEventListener("input", (e) => {
   formatCurrencyInput(e);
   calculate();
+});
+
+elements.stampDutyType?.addEventListener("change", () => {
+  updateStampDutyVisibility();
+  calculate();
+});
+
+elements.stampDutyValue?.addEventListener("input", (e) => {
+  formatCurrencyInput(e);
+  calculate();
+});
+
+document.querySelectorAll('input[name="stampFamilyType"]').forEach((radio) => {
+  radio.addEventListener("change", calculate);
+});
+
+document.querySelectorAll('input[name="stampSpecialCase"]').forEach((radio) => {
+  radio.addEventListener("change", calculate);
 });
 
 elements.baseAmount.addEventListener("input", (e) => {
