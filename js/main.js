@@ -446,16 +446,53 @@ function calculate() {
       ? `<div class="bd"><div class="bd-title">Accommodation Tax</div><div class="bd-row"><span class="bd-label">Room Charges</span><span class="bd-value">${taxableBase.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Tax Rate</span><span class="bd-value">2%</span></div><div class="bd-formula">Tax = ${taxableBase.toLocaleString()} × 2% = ${taxAmount.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
       : `<div class="bd"><div class="bd-title">ពន្ធស្នាក់នៅ</div><div class="bd-row"><span class="bd-label">តម្លៃបន្ទប់</span><span class="bd-value">${taxableBase.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រាពន្ធ</span><span class="bd-value">២%</span></div><div class="bd-formula">ពន្ធ = ${taxableBase.toLocaleString()} × ២% = ${taxAmount.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
   } else if (category === "import") {
-    const dutyRateStr = document.getElementById("dutyRate").value;
-    const dutyRate = (parseFloat(dutyRateStr) || 0) / 100;
-    const result = calculateImportDuty({ importValue: amount, dutyRate });
-    taxAmount = result.totalTax; // sum of duty and VAT
-    taxableBase = amount;
-    total = result.grandTotal;
-    const vatBase = amount + result.importDuty;
-    breakdown = currentLanguage === "en"
-        ? `<div class="bd"><div class="bd-title">Import Duty & VAT</div><div class="bd-row"><span class="bd-label">Import Value</span><span class="bd-value">${amount.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Duty Rate</span><span class="bd-value">${(dutyRate*100).toFixed(0)}%</span></div><div class="bd-formula">Customs Duty = ${amount.toLocaleString()} × ${(dutyRate*100).toFixed(0)}% = ${result.importDuty.toLocaleString()} KHR</div><div class="bd-row"><span class="bd-label">VAT Base (Value + Duty)</span><span class="bd-value">${vatBase.toLocaleString()} KHR</span></div><div class="bd-formula">VAT = ${vatBase.toLocaleString()} × 10% = ${result.vat.toLocaleString()} KHR</div><div class="bd-formula">Total Tax = ${result.importDuty.toLocaleString()} + ${result.vat.toLocaleString()} = ${result.totalTax.toLocaleString()} KHR</div><div class="bd-row bd-divider"><span class="bd-result-label">Total Tax to Pay</span><span class="bd-result">${result.totalTax.toLocaleString()} KHR</span></div></div>`
-        : `<div class="bd"><div class="bd-title">ពន្ធគយ និងអាករ</div><div class="bd-row"><span class="bd-label">តម្លៃនាំចូល</span><span class="bd-value">${amount.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">អត្រាពន្ធគយ</span><span class="bd-value">${(dutyRate*100).toFixed(0)}%</span></div><div class="bd-formula">ពន្ធគយ = ${amount.toLocaleString()} × ${(dutyRate*100).toFixed(0)}% = ${result.importDuty.toLocaleString()} រៀល</div><div class="bd-row"><span class="bd-label">មូលដ្ឋានអាករ (តម្លៃ + ពន្ធគយ)</span><span class="bd-value">${vatBase.toLocaleString()} រៀល</span></div><div class="bd-formula">អាករ = ${vatBase.toLocaleString()} × ១០% = ${result.vat.toLocaleString()} រៀល</div><div class="bd-formula">ពន្ធសរុប = ${result.importDuty.toLocaleString()} + ${result.vat.toLocaleString()} = ${result.totalTax.toLocaleString()} រៀល</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធសរុបត្រូវបង់</span><span class="bd-result">${result.totalTax.toLocaleString()} រៀល</span></div></div>`;
+    const stampType = document.getElementById("stampDutyType").value;
+    const stampRaw = parseFloat(document.getElementById("stampDutyValue").value.replace(/,/g, "")) || 0;
+    const stampValue = convertToKhr(stampRaw, getSelectedCurrency("stampDutyCurrency"));
+    const familyType = document.querySelector('input[name="stampFamilyType"]:checked')?.value || "family";
+    const specialCase = document.querySelector('input[name="stampSpecialCase"]:checked')?.value || "notBorey";
+    const result = calculateStampDuty({ stampType, value: stampValue, familyType, specialCase });
+    taxAmount = result.taxAmount;
+    taxableBase = result.taxableBase;
+    total = result.total;
+    grossAmount = 0;
+
+    const typeLabels = {
+      transfer: currentLanguage === "en" ? "Transfer of Ownership" : "ការផ្ទេរកម្មសិទ្ធិ",
+      companyShare: currentLanguage === "en" ? "Company Share / Contracts" : "ភាគហ៊ុនក្រុមហ៊ុន / កិច្ចសន្យា",
+      dissolution: currentLanguage === "en" ? "Dissolution/Closure & Merger" : "ការរំលាយ/បិទ និងការរួមបញ្ចូលគ្នា"
+    };
+    const stampTypeLabel = typeLabels[stampType] || stampType;
+
+    if (stampType === "dissolution") {
+      breakdown = currentLanguage === "en"
+        ? `<div class="bd"><div class="bd-title">Stamp Duty</div><div class="bd-row"><span class="bd-label">Type</span><span class="bd-value">${stampTypeLabel}</span></div><div class="bd-row"><span class="bd-label">Fixed Tax</span><span class="bd-value">1,000,000 KHR</span></div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">1,000,000 KHR</span></div></div>`
+        : `<div class="bd"><div class="bd-title">ពន្ធត្រាជូរ</div><div class="bd-row"><span class="bd-label">ប្រភេទ</span><span class="bd-value">${stampTypeLabel}</span></div><div class="bd-row"><span class="bd-label">ពន្ធថេរ</span><span class="bd-value">១,០០០,០០០ រៀល</span></div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">១,០០០,០០០ រៀល</span></div></div>`;
+    } else {
+      const rateStr = stampType === "transfer"
+        ? (familyType === "family" ? "0%" : "4%")
+        : (familyType === "family" ? "0%" : "0.1%");
+      const familyLabel = currentLanguage === "en"
+        ? (familyType === "family" ? "Family" : "Non-Family")
+        : (familyType === "family" ? "គ្រួសារ" : "មិនមែនគ្រួសារ");
+      const specialLabel = currentLanguage === "en"
+        ? (specialCase === "borey" ? "Borey/Condo" : "Not Borey/Condo")
+        : (specialCase === "borey" ? "បូរី/ខុនដូ" : "មិនមែនបូរី/ខុនដូ");
+
+      let formula = currentLanguage === "en"
+        ? `Tax = ${taxableBase.toLocaleString()} × ${rateStr} = ${taxAmount.toLocaleString()} KHR`
+        : `ពន្ធ = ${taxableBase.toLocaleString()} × ${rateStr} = ${taxAmount.toLocaleString()} រៀល`;
+
+      if (stampType === "transfer" && specialCase === "borey") {
+        formula = currentLanguage === "en"
+          ? `Taxable Base = ${stampValue.toLocaleString()} - $700,000 = ${taxableBase.toLocaleString()} KHR<br>${formula}`
+          : `មូលដ្ឋានជាប់ពន្ធ = ${stampValue.toLocaleString()} - $700,000 = ${taxableBase.toLocaleString()} រៀល<br>${formula}`;
+      }
+
+      breakdown = currentLanguage === "en"
+        ? `<div class="bd"><div class="bd-title">Stamp Duty</div><div class="bd-row"><span class="bd-label">Type</span><span class="bd-value">${stampTypeLabel}</span></div><div class="bd-row"><span class="bd-label">Value of Transfer</span><span class="bd-value">${stampValue.toLocaleString()} KHR</span></div><div class="bd-row"><span class="bd-label">Family Type</span><span class="bd-value">${familyLabel}</span></div><div class="bd-row"><span class="bd-label">Special Case</span><span class="bd-value">${specialLabel}</span></div><div class="bd-row"><span class="bd-label">Tax Rate</span><span class="bd-value">${rateStr}</span></div><div class="bd-formula">${formula}</div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
+        : `<div class="bd"><div class="bd-title">ពន្ធត្រាជូរ</div><div class="bd-row"><span class="bd-label">ប្រភេទ</span><span class="bd-value">${stampTypeLabel}</span></div><div class="bd-row"><span class="bd-label">តម្លៃនៃការផ្ទេរ</span><span class="bd-value">${stampValue.toLocaleString()} រៀល</span></div><div class="bd-row"><span class="bd-label">ប្រភេទគ្រួសារ</span><span class="bd-value">${familyLabel}</span></div><div class="bd-row"><span class="bd-label">ករណីពិសេស</span><span class="bd-value">${specialLabel}</span></div><div class="bd-row"><span class="bd-label">អត្រាពន្ធ</span><span class="bd-value">${rateStr}</span></div><div class="bd-formula">${formula}</div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
+    }
   } else if (category === "patent") {
     const pType = document.getElementById("patentType").value;
     const result = calculatePatentTax(pType);

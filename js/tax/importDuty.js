@@ -1,3 +1,5 @@
+import { USD_TO_KHR_RATE } from "../config/constants.js";
+
 export function calculateStampDuty({
   stampType,
   value,
@@ -22,7 +24,7 @@ export function calculateStampDuty({
 
   if (stampType === "transfer") {
     if (specialCase === "borey") {
-      taxableBase = Math.max(0, value - 700000);
+      taxableBase = Math.max(0, value - 700000 * USD_TO_KHR_RATE);
     }
     rate = familyType === "family" ? 0 : 0.04;
   } else if (stampType === "companyShare") {
