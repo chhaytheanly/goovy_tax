@@ -31,6 +31,18 @@ export function updateLanguage(currentLanguage, elements) {
   setText("lblPurchasingVatMode", t.lblVatMode);
   setText("lblOutputVatMode", t.lblVatMode);
   setText("lblVatType", t.lblVatType);
+  setText("vatFormTitle", t.vatFormTitle);
+  setText("lblPurchasingAmount", t.lblPurchasingAmount);
+  setText("lblSellingAmount", t.lblSellingAmount);
+  setText("lblPurchasingVatCase", t.lblPurchasingVatCase);
+  setText("lblSellingVatCase", t.lblSellingVatCase);
+  setText("optPurchasingWithVat", t.optPurchasingWithVat);
+  setText("optPurchasingWithoutVat", t.optPurchasingWithoutVat);
+  setText("optVatDomestic", t.optVatDomestic);
+  setText("optVatImport", t.optVatImport);
+  setText("optVatExport", t.optVatExport);
+  setText("optExclusive", t.optExclusive);
+  setText("optInclusive", t.optInclusive);
   setText("deductionsTitle", t.deductionsTitle);
   setText("lblMonthlyIncome", t.lblMonthlyIncome);
   setText("lblFringeBenefit", t.lblFringeBenefit);
