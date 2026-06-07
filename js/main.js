@@ -253,7 +253,7 @@ function calculate() {
     breakdown =
       currentLanguage === "en"
         ? `Output VAT: ${result.outputVAT.toLocaleString()} KHR (${purchasingModeLabel}, ${purchasingCaseLabel}); Input VAT: ${result.inputVAT.toLocaleString()} KHR (${outputModeLabel}, ${sellingCaseLabel}); Tax = Output VAT - Input VAT`
-        : `Output VAT: ${result.outputVAT.toLocaleString()} KHR (${purchasingModeLabel}, ${purchasingCaseLabel}); Input VAT: ${result.inputVAT.toLocaleString()} KHR (${outputModeLabel}, ${sellingCaseLabel}); Tax = Output VAT - Input VAT`;
+        : `អាករលើធាតុចេញ (Output VAT): ${result.outputVAT.toLocaleString()} KHR (${purchasingModeLabel}, ${purchasingCaseLabel}); អាករលើធាតុចូល (Input VAT): ${result.inputVAT.toLocaleString()} KHR (${outputModeLabel}, ${sellingCaseLabel}); Tax = អាករលើធាតុចេញ (Output VAT) - អាករលើធាតុចូល (Input VAT)`;
   } else if (category === "salary") {
     const deductions = getSalaryDeductions();
     grossAmount = deductions.monthlySalary + deductions.fringeBenefit;
