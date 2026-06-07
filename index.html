@@ -657,6 +657,54 @@
           </div>
         </div>
 
+        <div class="form-group deductions-section" id="accommodationDetailSection" style="display: none">
+          <div class="section-title" id="accommodationDetailTitle">
+            <i class="fa-solid fa-hotel"></i> Accommodation Tax Detail
+          </div>
+          <div class="form-group">
+            <label id="lblAccommodationAmount"><i class="fa-solid fa-money-bill-wave"></i> Room Charges</label>
+            <input type="text" id="accommodationAmount" class="form-input" placeholder="Enter room charges" value="5,000,000" />
+            <div class="currency-group">
+              <label class="currency-label" id="lblAccommodationCurrency">Currency</label>
+              <div class="radio-group currency-toggle">
+                <label class="radio-label">
+                  <input type="radio" name="accommodationCurrency" value="khr" checked />
+                  <span class="currency-khr" id="optAccommodationKHR">KHR</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="accommodationCurrency" value="usd" />
+                  <span class="currency-usd" id="optAccommodationUSD">USD</span>
+                </label>
+              </div>
+              <small class="hint-text currency-hint" id="accommodationCurrencyHint">*USD will be converted at 4,100 KHR</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group deductions-section" id="publicLightingDetailSection" style="display: none">
+          <div class="section-title" id="publicLightingDetailTitle">
+            <i class="fa-solid fa-lightbulb"></i> Public Lighting Tax Detail
+          </div>
+          <div class="form-group">
+            <label id="lblPublicLightingAmount"><i class="fa-solid fa-money-bill-wave"></i> Taxable Amount</label>
+            <input type="text" id="publicLightingAmount" class="form-input" placeholder="Enter taxable amount" value="5,000,000" />
+            <div class="currency-group">
+              <label class="currency-label" id="lblPublicLightingCurrency">Currency</label>
+              <div class="radio-group currency-toggle">
+                <label class="radio-label">
+                  <input type="radio" name="publicLightingCurrency" value="khr" checked />
+                  <span class="currency-khr" id="optPublicLightingKHR">KHR</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="publicLightingCurrency" value="usd" />
+                  <span class="currency-usd" id="optPublicLightingUSD">USD</span>
+                </label>
+              </div>
+              <small class="hint-text currency-hint" id="publicLightingCurrencyHint">*USD will be converted at 4,100 KHR</small>
+            </div>
+          </div>
+        </div>
+
         <div class="form-group deductions-section" id="vehicleGroup" style="display: none">
           <div class="section-title" id="lblTransportationTitle">
             <i class="fa-solid fa-car"></i> <span id="lblTransportationTitleText">Tax on Means of Transportation</span>

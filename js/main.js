@@ -64,9 +64,11 @@ function updateCategoryVisibility() {
   const isImport = category === "import";
   const isSpecific = category === "specific";
   const isProperty = category === "property";
+  const isAccommodation = category === "accommodation";
+  const isPublicLighting = category === "publicLighting";
 
   elements.baseAmountGroup.style.display =
-    (isSalary || isRental || isTransportation || isPatent || isVehicle || isProperty || isVat || isSpecific || isImport) ? "none" : "block";
+    (isSalary || isRental || isTransportation || isPatent || isVehicle || isProperty || isVat || isSpecific || isImport || isAccommodation || isPublicLighting) ? "none" : "block";
   const incomeTaxTypeGroup = document.getElementById("incomeTaxTypeGroup");
   if (incomeTaxTypeGroup) incomeTaxTypeGroup.style.display = isIncomeTax ? "block" : "none";
   const whtSubcategoryGroup = document.getElementById("whtSubcategoryGroup");
@@ -92,6 +94,12 @@ function updateCategoryVisibility() {
   const specificDetailSection = document.getElementById("specificDetailSection");
   if(specificDetailSection) specificDetailSection.style.display = isSpecific ? "block" : "none";
   
+  const accommodationDetailSection = document.getElementById("accommodationDetailSection");
+  if(accommodationDetailSection) accommodationDetailSection.style.display = isAccommodation ? "block" : "none";
+
+  const publicLightingDetailSection = document.getElementById("publicLightingDetailSection");
+  if(publicLightingDetailSection) publicLightingDetailSection.style.display = isPublicLighting ? "block" : "none";
+
   const vehicleGroup = document.getElementById("vehicleGroup");
   if(vehicleGroup) {
     vehicleGroup.style.display = isVehicle ? "block" : "none";
@@ -503,6 +511,8 @@ function calculate() {
     }
   
   } else if (category === "accommodation") {
+    amountRaw = parseFloat(document.getElementById("accommodationAmount").value.replace(/,/g, "")) || 0;
+    amount = convertToKhr(amountRaw, getSelectedCurrency("accommodationCurrency"));
     const result = calculateAccommodationTax(amount);
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
@@ -570,6 +580,8 @@ function calculate() {
       ? `<div class="bd"><div class="bd-title">Patent Tax</div><div class="bd-row"><span class="bd-label">Taxpayer Type</span><span class="bd-value">${pTypeLabel}</span></div><div class="bd-row"><span class="bd-label">Fixed Annual Amount</span><span class="bd-value">${taxAmount.toLocaleString()} KHR</span></div><div class="bd-row bd-divider"><span class="bd-result-label">Tax to Pay</span><span class="bd-result">${taxAmount.toLocaleString()} KHR</span></div></div>`
       : `<div class="bd"><div class="bd-title">ពន្ធប៉ាតង់</div><div class="bd-row"><span class="bd-label">ប្រភេទអ្នកជាប់ពន្ធ</span><span class="bd-value">${pTypeLabel}</span></div><div class="bd-row"><span class="bd-label">ចំនួនថេរប្រចាំឆ្នាំ</span><span class="bd-value">${taxAmount.toLocaleString()} រៀល</span></div><div class="bd-row bd-divider"><span class="bd-result-label">ពន្ធត្រូវបង់</span><span class="bd-result">${taxAmount.toLocaleString()} រៀល</span></div></div>`;
   } else if (category === "publicLighting") {
+    amountRaw = parseFloat(document.getElementById("publicLightingAmount").value.replace(/,/g, "")) || 0;
+    amount = convertToKhr(amountRaw, getSelectedCurrency("publicLightingCurrency"));
     const result = calculatePublicLightingTax(amount);
     taxAmount = result.taxAmount;
     taxableBase = result.taxableBase;
@@ -940,6 +952,22 @@ document.querySelectorAll('input[name="specificStatus"]').forEach((radio) => {
   radio.addEventListener("change", calculate);
 });
 document.getElementById("specificType")?.addEventListener("change", calculate);
+
+const accommodationAmount = document.getElementById("accommodationAmount");
+if (accommodationAmount) {
+  accommodationAmount.addEventListener("input", (e) => {
+    formatCurrencyInput(e);
+    calculate();
+  });
+}
+
+const publicLightingAmount = document.getElementById("publicLightingAmount");
+if (publicLightingAmount) {
+  publicLightingAmount.addEventListener("input", (e) => {
+    formatCurrencyInput(e);
+    calculate();
+  });
+}
 
 elements.calculateBtn.addEventListener("click", calculate);
 
