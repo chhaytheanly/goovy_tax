@@ -33,7 +33,7 @@ export function calculatePropertyTax(value) {
 }
 
 export function calculateUnregisteredRentalTax(amount) {
-  const tax = Math.round(amount * 0.1);
+  const tax = amount < 500000 ? 0 : Math.round(amount * 0.1);
   return {
     taxAmount: tax,
     taxableBase: amount,

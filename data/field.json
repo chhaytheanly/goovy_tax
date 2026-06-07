@@ -71,7 +71,7 @@
     "optRentalUnregistered": "Unregistered Business",
     "optRentalSoleProprietorship": "Sole Proprietorship (Register)",
     "lblRentalTaxRate": "Tax Rate 10%",
-    "rentalTaxRateHint": "*Tax = Monthly Rental Income × 10%",
+    "rentalTaxRateHint": "*Tax = Monthly Rental Income × 10% if income bigger than 500,000 KHR",
     "lblRentalVarietySpending": "Variety Spending (Staff costs, electricity, fix costs...)",
     "lblRentalVarietyDeduction": "Variety Spending:",
     "lblRentalSpouseStatus": "Spouse Status",
