@@ -65,6 +65,8 @@ export function updateLanguage(currentLanguage, elements) {
   document.getElementById("propertySurfaceHint").innerText = t.propertySurfaceHint;
   document.getElementById("resultsTitle").innerText = t.resultsTitle;
   document.getElementById("resTaxAmount").innerText = t.resTaxAmount;
+  document.getElementById("resOutputTax").innerText = t.resOutputTax;
+  document.getElementById("resInputTax").innerText = t.resInputTax;
 
   const categorySelect = elements.taxCategory;
   categorySelect.options[0].text = t.vatLabel;

@@ -479,6 +479,14 @@
         </h3>
         <div id="resultsContent">
           <div class="result-card">
+            <div class="result-row vat-row" id="outputTaxRow" style="display:none;">
+              <span class="result-label" id="resOutputTax"><i class="fa-solid fa-arrow-up"></i> Output Tax:</span>
+              <span class="result-value" id="outputTaxValue">0 KHR</span>
+            </div>
+            <div class="result-row vat-row" id="inputTaxRow" style="display:none;">
+              <span class="result-label" id="resInputTax"><i class="fa-solid fa-arrow-down"></i> Input Tax:</span>
+              <span class="result-value input-tax-value" id="inputTaxValue">0 KHR</span>
+            </div>
             <div class="result-row total-row">
               <span class="result-label" id="resTaxAmount"><i class="fa-solid fa-money-check-dollar"></i> Tax to Pay:</span>
               <span class="result-value tax-amount" id="taxAmountValue">0 KHR</span>

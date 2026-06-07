@@ -200,6 +200,7 @@ function calculate() {
   let breakdown = "";
   let grossAmount = amount;
   let totalDeductions = 0;
+  let vatResult = null;
 
   if (category === "vat") {
     const purchasingAmountRaw = parseFloat(elements.purchasingAmount.value.replace(/,/g, "")) || 0;
@@ -227,6 +228,7 @@ function calculate() {
     );
 
     taxAmount = result.tax;
+    vatResult = result;
     taxableBase = purchasingAmount;
     total = purchasingAmount + sellingAmount;
     const purchasingCaseLabel =
@@ -406,8 +408,24 @@ function calculate() {
         : `ពន្ធការដឹក: ៥% លើការចំណាយដឹកជញ្ជូនប្រចាំខែ`;
   }
 
-  document.getElementById("taxAmountValue").innerHTML =
-    `${taxAmount.toLocaleString()} KHR`;
+  const taxAmountEl = document.getElementById("taxAmountValue");
+  taxAmountEl.innerHTML = `${taxAmount.toLocaleString()} KHR`;
+
+  const isVatCategory = category === "vat";
+  if (isVatCategory && taxAmount < 0) {
+    taxAmountEl.classList.add("negative");
+  } else {
+    taxAmountEl.classList.remove("negative");
+  }
+  document.getElementById("outputTaxRow").style.display = isVatCategory ? "flex" : "none";
+  document.getElementById("inputTaxRow").style.display = isVatCategory ? "flex" : "none";
+
+  if (isVatCategory && vatResult) {
+    document.getElementById("outputTaxValue").innerHTML =
+      `${vatResult.outputVAT.toLocaleString()} KHR`;
+    document.getElementById("inputTaxValue").innerHTML =
+      `${vatResult.inputVAT.toLocaleString()} KHR`;
+  }
 
   const breakdownElement = document.getElementById("taxBreakdown");
   breakdownElement.innerHTML = breakdown;

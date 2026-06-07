@@ -23,6 +23,7 @@
   --border-radius: 8px;
   --btn-radius: 4px;
   --danger-red: #e0162b;
+  --success-green: #16a34a;
   --font-family: "Inter", "Kantumruy Pro", sans-serif;
   --transition-speed: 0.2s;
   --backdrop: none;
@@ -57,6 +58,7 @@
   --border-radius: 16px;
   --btn-radius: 8px;
   --danger-red: #ff003c;
+  --success-green: #00e676;
   --font-family: "Inter", "Kantumruy Pro", sans-serif;
   --transition-speed: 0.4s;
   --backdrop: blur(12px);
@@ -475,8 +477,22 @@ body {
   color: var(--danger-red);
 }
 
+.tax-amount.negative {
+  color: var(--success-green);
+}
+
+.input-tax-value {
+  color: var(--success-green);
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
 [data-theme="digital"] .tax-amount {
   text-shadow: 0 0 5px rgba(255, 0, 60, 0.5);
+}
+
+[data-theme="digital"] .tax-amount.negative {
+  text-shadow: 0 0 5px rgba(0, 230, 118, 0.5);
 }
 
 .total-row {
