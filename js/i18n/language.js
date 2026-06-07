@@ -153,9 +153,25 @@ export function updateLanguage(currentLanguage, elements) {
     if (option) option.text = optionLabels[index];
   });
 
-  // New inputs
-  const elDutyRate = document.getElementById("lblDutyRate");
-  if(elDutyRate) elDutyRate.innerHTML = `<i class="fa-solid fa-percent"></i> ${t.lblDutyRate}`;
+  // Stamp Duty
+  document.getElementById("stampDutyTitle").innerHTML = `<i class="fa-solid fa-stamp"></i> ${t.stampDutyTitle}`;
+  setText("lblStampDutyType", t.lblStampDutyType);
+  const stampType = document.getElementById("stampDutyType");
+  if (stampType) {
+    stampType.options[0].text = t.optStampTransfer;
+    stampType.options[1].text = t.optStampCompanyShare;
+    stampType.options[2].text = t.optStampDissolution;
+  }
+  setText("lblStampDutyValue", t.lblStampDutyValue);
+  setText("lblStampDutyFamilyType", t.lblStampDutyFamilyType);
+  setText("optStampFamily", t.optStampFamily);
+  setText("optStampNonFamily", t.optStampNonFamily);
+  setText("lblStampSpecialCase", t.lblStampSpecialCase);
+  setText("optStampBorey", t.optStampBorey);
+  setText("optStampNotBorey", t.optStampNotBorey);
+  document.getElementById("stampSpecialHint").innerText = t.stampSpecialHint;
+  document.getElementById("lblStampFixedTax").innerHTML = `<i class="fa-solid fa-coins"></i> ${t.lblStampFixedTax}`;
+  document.getElementById("stampDutyNote").innerText = t.stampDutyNote;
   
   const elPatentType = document.getElementById("lblPatentType");
   if(elPatentType) elPatentType.innerHTML = `<i class="fa-solid fa-building"></i> ${t.lblPatentType}`;

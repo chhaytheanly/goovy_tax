@@ -101,7 +101,7 @@
             </option>
           
             <option value="accommodation">Accommodation Tax (2%)</option>
-            <option value="import">Import Duty & VAT</option>
+            <option value="import">Stamp Duty</option>
             <option value="patent">Patent Tax</option>
             <option value="publicLighting">Public Lighting Tax (5%)</option>
             <option value="specific">Specific Tax</option>
@@ -523,9 +523,75 @@
           <small id="propertySurfaceHint" class="hint-text">*Tax applies only to surface above 50,000 m²</small>
         </div>
 
-        <div class="form-group" id="dutyRateGroup" style="display: none">
-          <label id="lblDutyRate"><i class="fa-solid fa-percent"></i> Duty Rate (%)</label>
-          <input type="number" id="dutyRate" class="form-input" placeholder="Enter duty rate %" value="15" />
+        <div class="deductions-section" id="stampDutySection" style="display: none">
+          <div class="section-title" id="stampDutyTitle">
+            <i class="fa-solid fa-stamp"></i> Stamp Duty
+          </div>
+
+          <div class="form-group">
+            <label id="lblStampDutyType"><i class="fa-solid fa-list"></i> Type</label>
+            <select id="stampDutyType" class="form-select">
+              <option value="transfer" id="optStampTransfer">Transfer of ownership, property(land, building) and movable property(car, Motorcycles..)</option>
+              <option value="companyShare" id="optStampCompanyShare">Company Share, Contracts for the supply of goods or services using state funds</option>
+              <option value="dissolution" id="optStampDissolution">Dissolution/Closure and Merger</option>
+            </select>
+          </div>
+
+          <div id="stampDutyValueGroup">
+            <div class="form-group">
+              <label id="lblStampDutyValue"><i class="fa-solid fa-money-bill-wave"></i> Value of Transfer</label>
+              <input type="text" id="stampDutyValue" class="form-input" placeholder="Enter value of transfer" value="0" />
+              <div class="currency-group">
+                <label class="currency-label" id="lblStampDutyCurrency">Currency</label>
+                <div class="radio-group currency-toggle">
+                  <label class="radio-label">
+                    <input type="radio" name="stampDutyCurrency" value="khr" checked />
+                    <span class="currency-khr" id="optStampKHR">KHR</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="stampDutyCurrency" value="usd" />
+                    <span class="currency-usd" id="optStampUSD">USD</span>
+                  </label>
+                </div>
+                <small class="hint-text currency-hint" id="stampCurrencyHint">*USD will be converted at 4,100 KHR</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label id="lblStampDutyFamilyType"><i class="fa-solid fa-people-arrows"></i> Type</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="stampFamilyType" value="family" checked />
+                  <span id="optStampFamily">Family</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="stampFamilyType" value="nonFamily" />
+                  <span id="optStampNonFamily">None Family</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" id="stampDutySpecialGroup" style="display: none">
+            <label id="lblStampSpecialCase"><i class="fa-solid fa-building"></i> Special case (Incentives for Borey/Condo)</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="stampSpecialCase" value="borey" />
+                <span id="optStampBorey">Borey/Condo</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="stampSpecialCase" value="notBorey" checked />
+                <span id="optStampNotBorey">Not Borey/Condo</span>
+              </label>
+            </div>
+            <small class="hint-text" id="stampSpecialHint">*Tax preferences = 700,000 KHR, Value of Transfer = (Value of Transfer - 700,000)</small>
+          </div>
+
+          <div class="form-group" id="stampDutyFixedGroup" style="display: none">
+            <label id="lblStampFixedTax"><i class="fa-solid fa-coins"></i> Tax = 1,000,000 KHR</label>
+          </div>
+
+          <small class="hint-text" id="stampDutyNote" style="margin-top: 0.5rem; display: block;">*Tax = Value of Transfer × rate</small>
         </div>
 
         <div class="form-group" id="patentGroup" style="display: none">
