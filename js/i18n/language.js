@@ -43,6 +43,8 @@ export function updateLanguage(currentLanguage, elements) {
   setText("optVatExport", t.optVatExport);
   setText("optExclusive", t.optExclusive);
   setText("optInclusive", t.optInclusive);
+  setText("optExclusive01", t.optExclusive01);
+  setText("optInclusive01", t.optInclusive01);
   setText("deductionsTitle", t.deductionsTitle);
   setText("lblMonthlyIncome", t.lblMonthlyIncome);
   setText("lblFringeBenefit", t.lblFringeBenefit);
