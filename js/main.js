@@ -251,7 +251,7 @@ function updateLandVehicleVisibility() {
 function updateWaterVehicleVisibility() {
   const wType = document.getElementById("waterType")?.value || "river";
 
-  const hasPower = wType === "tugs" || wType === "speedboat";
+  const hasPower = wType === "tugs";
   const isRiver = wType === "river";
   const isSea = wType === "sea";
 
@@ -674,7 +674,7 @@ function calculate() {
       rowsEn += `<div class="bd-row"><span class="bd-label">Type of Transportation</span><span class="bd-value">Water Transportation</span></div><div class="bd-row"><span class="bd-label">Type</span><span class="bd-value">${wTypeLabel}</span></div>`;
       rowsKh += `<div class="bd-row"><span class="bd-label">ប្រភេទនៃការដឹកជញ្ជូន</span><span class="bd-value">ការដឹកជញ្ជូនតាមផ្លូវទឹក</span></div><div class="bd-row"><span class="bd-label">ប្រភេទ</span><span class="bd-value">${wTypeLabel}</span></div>`;
 
-      if (waterType === "tugs" || waterType === "speedboat") {
+      if (waterType === "tugs") {
         rowsEn += `<div class="bd-row"><span class="bd-label">Power</span><span class="bd-value">${parseInt(d.power || 0).toLocaleString()} HP</span></div>`;
         rowsKh += `<div class="bd-row"><span class="bd-label">កម្លាំង</span><span class="bd-value">${parseInt(d.power || 0).toLocaleString()} សេះ</span></div>`;
       } else if (waterType === "river") {

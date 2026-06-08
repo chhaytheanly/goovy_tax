@@ -138,10 +138,10 @@ export function calculateVehicleTax(data) {
       details = { label: "Modify Vehicle", modifyType: data.modifyType };
     }
   } else if (data.transportType === "water") {
-    if (data.waterType === "tugs" || data.waterType === "speedboat") {
+    if (data.waterType === "tugs") {
       taxableBase = parseInt(data.powerHP, 10) || 0;
       taxAmount = getPowerTax(data.powerHP);
-      details = { label: data.waterType === "tugs" ? "Tugs & Fishing Boats" : "Speedboats", power: data.powerHP };
+      details = { label: "Tugs & fishing Boats and speedBoats", power: data.powerHP };
     } else if (data.waterType === "river") {
       if (data.riverType === "cargo") {
         taxableBase = parseInt(data.cargoWeight, 10) || 0;

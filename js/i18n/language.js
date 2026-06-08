@@ -256,7 +256,6 @@ export function updateLanguage(currentLanguage, elements) {
     waterType.options[0].text = t.optWaterRiver;
     waterType.options[1].text = t.optWaterSea;
     waterType.options[2].text = t.optWaterTugs;
-    waterType.options[3].text = t.optWaterSpeedboat;
   }
 
 
